@@ -6,3 +6,4 @@ export const canMoveNote=async(id:string,parentId:string|null)=>{if(id===parentI
 export const moveNote=async(id:string,parentId:string|null)=>{if(!(await canMoveNote(id,parentId)))throw new Error('Нельзя переместить заметку в себя или собственного потомка');const n=await db.notes.get(id);if(!n)throw new Error('Заметка не найдена');await db.notes.put({...n,parentId,updatedAt:Date.now()});return {...n,parentId}};
 export const createChildNote=(parentId:string|null)=>db.notes.add(newNote({parentId}));
 export const createChildProject=(parentId:string|null)=>db.notes.add(newNote({parentId,isProject:true}));
+export const updateSubtree=(id:string,field:'archivedAt'|'deletedAt',value:number|null)=>getDescendants(id).then(async nodes=>{const root=await db.notes.get(id);for(const n of [root,...nodes])if(n)await db.notes.put({...n,[field]:value,updatedAt:Date.now()})});
