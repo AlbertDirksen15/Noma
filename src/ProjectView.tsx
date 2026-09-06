@@ -5,7 +5,7 @@ import { db, type Note } from './data';
 import { createChildNote, createChildProject, getAncestors, getChildren, moveNote, updateSubtree } from './treeRepository';
 export default function ProjectView(){
  const {id}=useParams();const navigate=useNavigate();const [project,setProject]=useState<Note>();const [children,setChildren]=useState<Note[]>([]);const [crumbs,setCrumbs]=useState<Note[]>([]);const [projects,setProjects]=useState<Note[]>([]);const [moving,setMoving]=useState<Note>();
- const load=async()=>{if(!id)return;const p=(await db.notes.toArray()).find(n=>n.id===id);setProject(p);setChildren(await getChildren(id));setCrumbs(await getAncestors(id));setProjects((await db.notes.toArray()).filter(n=>n.isProject&&!n.deletedAt))};useEffect(()=>{load()},[id]);
+ const load=async()=>{if(!id)return;const all=await db.notes.toArray();const p=all.find(n=>String(n.id)===id);setProject(p);setChildren(p?all.filter(n=>n.parentId===p.id):[]);setCrumbs(p?await getAncestors(p.id):[]);setProjects(all.filter(n=>n.isProject&&!n.deletedAt))};useEffect(()=>{load()},[id]);
  if(!project)return <main className="content"><button onClick={()=>navigate('/')}>Назад</button><h1>Проект не найден</h1></main>;
  const move=(parent:string|null)=>{if(!moving)return;moveNote(moving.id,parent).then(()=>{setMoving(undefined);load()}).catch(e=>alert(e instanceof Error?e.message:'Перемещение запрещено'))};
  const archiveTree=()=>{if(confirm('Архивировать проект и все вложенные элементы?'))updateSubtree(project.id,'archivedAt',Date.now()).then(()=>navigate('/archive'))};
