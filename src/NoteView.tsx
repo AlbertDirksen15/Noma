@@ -1,0 +1,5 @@
+import { useEffect, useState } from 'react';
+import { ArrowLeft, Check } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { db, type Note } from './data';
+export default function NoteView(){const {id}=useParams();const navigate=useNavigate();const [note,setNote]=useState<Note>();useEffect(()=>{if(id)db.notes.get(id).then(setNote)},[id]);if(!note)return <main className="content"><button onClick={()=>navigate('/')}>Назад</button><h1>Заметка не найдена</h1></main>;const save=async()=>{const updated={...note,updatedAt:Date.now()};await db.notes.put(updated);setNote(updated)};return <main className={'content '+note.color}><button className="back" onClick={()=>navigate(-1)}><ArrowLeft size={16}/> Назад</button><input className="title-input" value={note.title} placeholder="Название" onChange={e=>setNote({...note,title:e.target.value})}/><textarea className="note-page-text" value={note.content} placeholder="Напишите что-нибудь…" onChange={e=>setNote({...note,content:e.target.value})}/><button className="save" onClick={save}><Check size={16}/> Сохранить</button></main>}
