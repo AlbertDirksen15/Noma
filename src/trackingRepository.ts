@@ -4,6 +4,7 @@ export type Clock = () => number;
 const now:Clock=()=>Date.now();
 const makeSession=(noteId:string, clock:Clock):TrackingSession=>{const t=clock();return {id:crypto.randomUUID(),noteId,startedAt:t,endedAt:null,durationMs:0,status:'running',createdAt:t,updatedAt:t,manual:false,date:t}};
 export const getActiveSession=()=>db.trackingSessions.where('status').equals('running').first();
+export const getOpenSession=async()=>{const sessions=await db.trackingSessions.toArray();return sessions.filter(s=>s.status==='running'||s.status==='paused').sort((a,b)=>b.updatedAt-a.updatedAt)[0]};
 export const getSessionsForNote=(noteId:string)=>db.trackingSessions.where('noteId').equals(noteId).sortBy('date');
 export const elapsed=(s:TrackingSession, clock:Clock=now)=>s.durationMs+(s.status==='running'&&s.startedAt!==null?Math.max(0,clock()-s.startedAt):0);
 export const setTrackingEnabled=async(noteId:string, enabled:boolean)=>{const note=await db.notes.get(noteId);if(!note)throw new Error('Заметка не найдена');await db.notes.put({...note,trackTime:enabled,updatedAt:Date.now()});return enabled};
