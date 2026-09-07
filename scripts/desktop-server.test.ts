@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { get } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -23,6 +23,30 @@ afterEach(() => {
 });
 
 describe('desktop local server', () => {
+  it('rejects files reached through a directory link outside dist', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'noma-links-'));
+    temporaryDirectories.push(directory);
+    const dist = join(directory, 'dist');
+    const outside = join(directory, 'outside');
+    mkdirSync(dist);
+    mkdirSync(outside);
+    writeFileSync(join(dist, 'index.html'), 'Noma');
+    writeFileSync(join(outside, 'secret.txt'), 'private');
+    symlinkSync(outside, join(dist, 'linked'), process.platform === 'win32' ? 'junction' : 'dir');
+    const started = await startDesktopServer({ distDir: dist, port: 0 });
+    runningServers.push(started.server);
+    const response = await request(`http://127.0.0.1:${started.port}/linked/secret.txt`);
+    expect(response.status).toBe(403);
+    expect(response.body).not.toContain('private');
+  });
+
+  it('rejects a directory named index.html as missing build output', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'noma-index-'));
+    temporaryDirectories.push(directory);
+    mkdirSync(join(directory, 'index.html'));
+    expect(() => ensureDist(directory)).toThrow('Run npm run build first');
+  });
+
   it('serves static files and falls back to index for SPA routes', async () => {
     const directory = mkdtempSync(join(tmpdir(), 'noma-desktop-'));
     temporaryDirectories.push(directory);
