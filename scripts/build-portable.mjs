@@ -9,7 +9,12 @@ export const buildPortable = (projectDir = process.cwd()) => {
   const dist = resolve(root, 'dist');
   if (!existsSync(resolve(dist, 'index.html'))) throw new Error('Build output is missing. Run npm run build first.');
   const target = portableRoot(root);
-  rmSync(target, { recursive: true, force: true });
+  try {
+    rmSync(target, { recursive: true, force: true });
+  } catch (error) {
+    if (!['EPERM', 'EACCES', 'EBUSY'].includes(error?.code)) throw error;
+    console.warn(`Could not fully clean ${target}; reusing the existing portable folder.`);
+  }
   mkdirSync(target, { recursive: true });
   cpSync(dist, resolve(target, 'dist'), { recursive: true });
   cpSync(resolve(root, 'scripts', 'desktop-server.mjs'), resolve(target, 'server', 'desktop-server.mjs'));
