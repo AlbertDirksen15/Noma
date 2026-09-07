@@ -1,0 +1,10 @@
+import { useRef,useState } from 'react';
+import { Download,FileUp,X } from 'lucide-react';
+import { exportWorkspaceJson,importWorkspace } from './workspaceRepository';
+
+export default function BackupPanel({onClose,onImported}:{onClose:()=>void;onImported:()=>void}){
+ const input=useRef<HTMLInputElement>(null),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
+ const download=async()=>{setBusy(true);try{const json=await exportWorkspaceJson(),url=URL.createObjectURL(new Blob([json],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download=`noma-workspace-${new Date().toISOString().slice(0,10)}.json`;link.click();URL.revokeObjectURL(url);setMessage('Резервная копия скачана.')}finally{setBusy(false)}};
+ const restore=async(file:File)=>{setBusy(true);try{const result=await importWorkspace(await file.text());setMessage(`Восстановлено: ${result.notes} заметок, ${result.sessions} сессий.`);onImported()}catch(error){setMessage(error instanceof Error?error.message:'Не удалось восстановить резервную копию')}finally{setBusy(false)}};
+ return <div className="overlay" onMouseDown={onClose}><section className="settings backup-panel" onMouseDown={event=>event.stopPropagation()}><div className="editor-top"><h2>Резервные копии</h2><button onClick={onClose}><X size={19}/></button></div><p>Versioned JSON содержит заметки, учёт времени, Pomodoro, историю версий и tombstones.</p><button className="save" disabled={busy} onClick={()=>void download()}><Download size={16}/> Скачать backup</button><input ref={input} type="file" accept="application/json,.json" hidden onChange={event=>{const file=event.target.files?.[0];if(file)void restore(file)}}/><button disabled={busy} onClick={()=>input.current?.click()}><FileUp size={16}/> Восстановить из файла</button><p className="backup-warning">Восстановление заменяет текущее локальное рабочее пространство.</p><hr/><strong>Google Drive / Noma/</strong><p>Загрузка в Drive пока недоступна: OAuth client ID не настроен для этой сборки.</p>{message&&<p className="backup-message">{message}</p>}</section></div>
+}
