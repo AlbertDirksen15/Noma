@@ -22,3 +22,11 @@ Der lokale Workspace kann als versionierte JSON-Datei exportiert und wiederherge
 `npm run desktop` baut das bestehende Frontend, startet einen Node-Server ausschließlich auf `127.0.0.1:3847` (oder dem nächsten freien Port) und öffnet den normalen Browser. `npm run desktop:serve` startet den Server ohne Browseröffnung. Dies ist kein Cloud-Backend und kein natives EXE.
 
 Für einen portablen Windows-Ordner führt man `npm run build:portable` aus. Der von Git ignorierte Ordner `release/Noma-portable/` enthält `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, den production-`dist/`-Ordner und den lokalen Server. Node.js muss installiert sein; ein gebündeltes `Noma.exe` ist ein späterer Packaging-Schritt.
+
+## MVP 0.9 — Portable, 0.9.0-local.0
+
+Erstellen: `npm run build:portable`. Den gesamten Ordner `release/Noma-portable` mit Noma.cmd, Noma.ps1, README_RUN.txt, dist und server kopieren. Node.js 22.12+ oder 24 LTS muss im PATH installiert sein. Auf dem Zielcomputer ist kein npm install erforderlich. Noch keine gebündelte oder signierte EXE.
+
+Start mit Noma.cmd; der Browser öffnet sich automatisch. Der Server bindet nur an 127.0.0.1:3847 und versucht bei Belegung den nächsten Port. NOMA_PORT überschreibt den Startport. Mit Strg+C im Terminal beenden; das Schließen des Browsers beendet den Server nicht. Noma.ps1 unterliegt der PowerShell-Ausführungsrichtlinie. Vor erneutem Erstellen den Server beenden.
+
+Daten liegen in IndexedDB im Browserprofil, nicht im Portable-Ordner. Ein anderer Port oder ein anderes Profil kann leer erscheinen. Zum ursprünglichen Port zurückkehren oder Workspace Export/Import verwenden. Vor einem Computerwechsel Daten exportieren. Prüfungen: lint, typecheck, test, build, build:portable.
