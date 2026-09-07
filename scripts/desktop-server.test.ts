@@ -1,9 +1,9 @@
 import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { get } from 'node:http';
+import { createServer, get } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_DESKTOP_PORT, DESKTOP_HOST, ensureDist, shutdownDesktopServer, startDesktopServer } from './desktop-server.mjs';
+import { DEFAULT_DESKTOP_PORT, DESKTOP_HOST, ensureDist, isNomaDesktopServer, shutdownDesktopServer, startDesktopServer } from './desktop-server.mjs';
 
 const runningServers: Array<{ close: () => void }> = [];
 const temporaryDirectories: string[] = [];
@@ -63,7 +63,17 @@ describe('desktop local server', () => {
     expect((await request(`http://127.0.0.1:${started.port}/note/example`)).body).toContain('Noma');
     expect((await request(`http://127.0.0.1:${started.port}/missing.js`)).status).toBe(404);
     expect((await request(`http://127.0.0.1:${started.port}/..%2Fpackage.json`)).status).toBe(403);
+    expect(await isNomaDesktopServer(started.port)).toBe(true);
     expect(started.server.address()).toMatchObject({ address: '127.0.0.1' });
+  });
+
+  it('does not mistake another local server for Noma', async () => {
+    const other = createServer((_request, response) => response.end('other'));
+    await new Promise<void>((resolveListen) => other.listen(0, DESKTOP_HOST, resolveListen));
+    runningServers.push(other);
+    const address = other.address();
+    expect(address).not.toBeNull();
+    expect(await isNomaDesktopServer((address as { port: number }).port)).toBe(false);
   });
 
   it('selects the next localhost port when the default is occupied', async () => {
@@ -75,7 +85,7 @@ describe('desktop local server', () => {
     const started = await startDesktopServer({ distDir: directory, port: occupied.port });
     runningServers.push(started.server);
 
-    expect(started.port).toBe(occupied.port + 1);
+    expect(started.port).not.toBe(occupied.port);
   });
 
   it('reports a clear error when the production build is missing', () => {

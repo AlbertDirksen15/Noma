@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
-import { createServer } from 'node:http';
+import { createServer, get } from 'node:http';
 import { resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
@@ -37,6 +37,11 @@ export const createDesktopServer = (distDir) => createServer((request, response)
     const pathname = decodeURIComponent((request.url ?? '/').split('?')[0]);
     if (!pathname.startsWith('/') || pathname.includes('\0')) {
       response.writeHead(400); response.end('Bad request'); return;
+    }
+    if (pathname === '/__noma_health') {
+      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      response.end('{"app":"noma-desktop"}');
+      return;
     }
     const candidate = safePath(distDir, pathname);
     if (!candidate) {
@@ -77,7 +82,7 @@ export const startDesktopServer = ({ distDir = resolve(process.cwd(), 'dist'), p
   const tryPort = (candidate) => {
     const server = createDesktopServer(distDir);
     server.once('error', (error) => {
-      if (error.code === 'EADDRINUSE') {
+      if (error.code === 'EADDRINUSE' || error.code === 'EACCES') {
         tryPort(candidate === 65535 ? 0 : candidate + 1);
         return;
       }
@@ -86,6 +91,20 @@ export const startDesktopServer = ({ distDir = resolve(process.cwd(), 'dist'), p
     server.listen(candidate, DESKTOP_HOST, () => resolveServer({ server, port: server.address().port }));
   };
   tryPort(port);
+});
+
+export const isNomaDesktopServer = (port, timeout = 800) => new Promise((resolveNoma) => {
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    resolveNoma(false); return;
+  }
+  const request = get({ host: DESKTOP_HOST, port, path: '/__noma_health', timeout }, (response) => {
+    let body = '';
+    response.setEncoding('utf8');
+    response.on('data', (chunk) => { body += chunk; });
+    response.on('end', () => resolveNoma(response.statusCode === 200 && body === '{"app":"noma-desktop"}'));
+  });
+  request.once('timeout', () => request.destroy());
+  request.once('error', () => resolveNoma(false));
 });
 
 export const ensureDist = (distDir) => {
@@ -119,12 +138,15 @@ if (isMain) {
   const port = portArg ? Number(portArg.slice('--port='.length)) : Number(process.env.NOMA_PORT ?? DEFAULT_DESKTOP_PORT);
   const distDir = distArg ? resolve(distArg.slice('--dist='.length)) : resolve(process.cwd(), 'dist');
   const shouldOpen = process.argv.includes('--open');
-  try { ensureDist(distDir); } catch (error) {
-    console.error(error instanceof Error ? error.message : error);
-    process.exitCode = 1;
-  }
-  if (process.exitCode) process.exit();
-  startDesktopServer({ distDir, port }).then(({ server, port: actualPort }) => {
+  const run = async () => {
+    ensureDist(distDir);
+    if (shouldOpen && await isNomaDesktopServer(port)) {
+      const url = `http://${DESKTOP_HOST}:${port}`;
+      console.log(`Noma is already running at ${url}`);
+      openBrowser(url);
+      return;
+    }
+    const { server, port: actualPort } = await startDesktopServer({ distDir, port });
     let stopping = false;
     const stop = () => {
       if (stopping) return;
@@ -140,7 +162,8 @@ if (isMain) {
     console.log(`Noma desktop mode listening on ${url}`);
     if (actualPort !== port) console.log(`Port ${port} was busy; selected ${actualPort}`);
     if (shouldOpen) openBrowser(url);
-  }).catch((error) => {
+  };
+  run().catch((error) => {
     console.error('Unable to start Noma desktop mode:', error);
     process.exitCode = 1;
   });
