@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "desktop": "npm run build && node scripts/desktop-server.mjs --open",
+    "desktop:serve": "node scripts/desktop-server.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "tsc -b --pretty false",
