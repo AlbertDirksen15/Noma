@@ -1,22 +1,29 @@
 import { db } from './data';
 import { createPomodoro, startPomodoro } from './pomodoro';
 
-// Reconcile by timestamp, including after suspended tabs or reload.
+// A completed Pomodoro is only a rhythm signal. It never changes the tracking session.
 export async function reconcilePomodoro(now = Date.now()) {
   await db.transaction('rw', db.trackingSessions, async () => {
-    const running = await db.trackingSessions.where('status').equals('running').toArray();
-    for (const session of running) {
+    const sessions = await db.trackingSessions.toArray();
+    for (const session of sessions) {
       const p = session.pomodoro;
       if (!p || p.startedAt === null || p.status !== 'work') continue;
-      const end = p.startedAt + p.durationMs;
-      if (now < end) continue;
+      if (now < p.startedAt + p.durationMs) continue;
       await db.trackingSessions.update(session.id, {
-        durationMs: session.durationMs + Math.max(0, end - (session.startedAt ?? end)),
-        startedAt: null, status: 'paused', updatedAt: end,
         pomodoro: { ...p, status: 'work-complete', startedAt: null, elapsedMs: p.durationMs },
       });
     }
   });
+}
+
+export async function startNewPomodoroCycle(sessionId: string, now = Date.now()) {
+  await reconcilePomodoro(now);
+  const session = await db.trackingSessions.get(sessionId);
+  if (!session || session.status !== 'running') throw new Error('Новый Pomodoro можно начать только при работающем таймере');
+  const fresh = createPomodoro(session.pomodoro?.durationMs ? session.pomodoro.durationMs / 60_000 : undefined);
+  const pomodoro = startPomodoro(fresh, now);
+  await db.trackingSessions.update(sessionId, { pomodoro });
+  return pomodoro;
 }
 
 export async function configurePomodoro(noteId: string, minutes: number, now = Date.now()) {
@@ -25,10 +32,10 @@ export async function configurePomodoro(noteId: string, minutes: number, now = D
   await db.transaction('rw', db.notes, db.trackingSessions, async () => {
     await db.notes.update(noteId, { pomodoroMinutes: minutes });
     const sessions = await db.trackingSessions.where('noteId').equals(noteId).toArray();
-    for (const s of sessions) {
-      if (s.status === 'completed') continue;
+    for (const session of sessions) {
+      if (session.status === 'completed') continue;
       const fresh = createPomodoro(minutes);
-      await db.trackingSessions.update(s.id, { pomodoro: s.status === 'running' ? startPomodoro(fresh, now) : fresh });
+      await db.trackingSessions.update(session.id, { pomodoro: session.status === 'running' ? startPomodoro(fresh, now) : fresh });
     }
   });
 }
