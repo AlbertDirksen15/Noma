@@ -1,6 +1,8 @@
 .tracking-timer-row { gap: 10px; }
 .pomodoro-wrap { gap: 10px; padding-right: 12px; border-right: 1px solid #deddd5; }
-.pomodoro-circle { width: 68px; height: 68px; flex: 0 0 68px; border: 0; color: #b8b1a0; border-radius: 50%; }
+.pomodoro-indicator { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; }
+.pomodoro-caption { color: #6d7583; font-size: 12px; white-space: nowrap; }
+.pomodoro-circle { width: 68px; height: 68px; flex: 0 0 68px; border: 0; color: #ff665e; border-radius: 50%; }
 .pomodoro-circle svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .pomodoro-track { stroke: #eee9dd; }
 .pomodoro-progress { stroke: currentColor; transition: stroke-dashoffset .35s linear, stroke .2s; }

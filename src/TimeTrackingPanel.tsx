@@ -16,14 +16,14 @@ function PomodoroCircle({state,onClick}:{state:PomodoroState;onClick:()=>void}) 
   const remainingSeconds = Math.ceil(Math.max(0, state.durationMs - elapsedMs) / 1000);
   const time = `${String(Math.floor(remainingSeconds / 60)).padStart(2, '0')}:${String(remainingSeconds % 60).padStart(2, '0')}`;
   const progress = state.status === 'work' ? Math.min(1, Math.max(0, elapsedMs / state.durationMs)) : 1;
-  return <button className={`pomodoro-circle ${state.status}`} aria-label={`Pomodoro: ${time}. Настройки`} onClick={onClick}>
+  return <div className="pomodoro-indicator"><button className={`pomodoro-circle ${state.status}`} aria-label={`Pomodoro: ${time}. Настройки`} onClick={onClick}>
     <svg viewBox="0 0 72 72" aria-hidden="true">
       <circle className="pomodoro-track" cx="36" cy="36" r="29" fill="none" strokeWidth="6"/>
       <circle className="pomodoro-progress" cx="36" cy="36" r="29" fill="none" strokeWidth="6" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress)} transform="rotate(-90 36 36)"/>
       <circle className="pomodoro-marker" cx="36" cy="7" r="5" strokeWidth="2"/>
     </svg>
     <span className="pomodoro-time">{time}</span>
-  </button>;
+  </button><span className="pomodoro-caption">🍅 {state.durationMs / 60000} мин</span></div>;
 }
 
 export function TimeTrackingPanel({note,compact=false}:{note:Note;compact?:boolean}){
