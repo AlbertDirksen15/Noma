@@ -5,12 +5,12 @@ Requirements
 ------------
 
 - Windows.
-- Node.js installed and available as `node` in PATH.
+- No Node.js installation is required. Noma includes its own runtime.
 
 Run
 ---
 
-Double-click `Noma.cmd`, or run it from PowerShell. It starts the existing production frontend through a Node server bound only to `127.0.0.1`, defaults to port 3847, selects the next free port when needed, and opens the normal browser.
+Double-click `Noma.exe`. It starts the existing production frontend through its bundled runtime on `127.0.0.1`, defaults to port 3847, selects the next free port when needed, and opens the normal browser. Keep the Noma window open; press Ctrl+C to stop it.
 
 To build or refresh the portable folder from the repository:
 
@@ -18,7 +18,7 @@ To build or refresh the portable folder from the repository:
 
 The launcher is a local browser application using IndexedDB. It has no cloud backend and does not send user data anywhere. Google Drive backup is blocked until a real OAuth Client ID is configured.
 
-This MVP prepares a portable launcher; it is not a bundled or signed `Noma.exe`. A future package may bundle the Node.js runtime.
+Noma 1.0 Beta is a portable Windows folder. It is not an installer or a signed executable yet, but it includes the runtime required to run Noma offline.
 
 ## MVP 0.9 portable verification — 0.9.0-local.0
 

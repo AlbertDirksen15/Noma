@@ -1,5 +1,11 @@
 # Noma Release Notes
 
+## Noma 1.0 Beta — v1.0.0-beta.0
+
+- Double-click `Noma.exe` in the portable folder to start Noma without a separate Node.js installation.
+- The complete portable folder must remain together: `Noma.exe`, `runtime/`, `server/` and `dist/`.
+- Noma remains an offline local browser application. The executable is not signed and no Windows installer is included yet.
+
 ## Noma 0.9 Beta — v0.9.0-local.0
 
 - Added Windows `Noma.cmd` and PowerShell `Noma.ps1` launchers.

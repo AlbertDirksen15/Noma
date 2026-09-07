@@ -29,8 +29,9 @@ Noma is a local-first personal productivity app built around universal notes. It
 - MVP 0.6 Pomodoro: IMPLEMENTATION COMPLETE / MANUAL VERIFICATION PARTIAL.
 - MVP 0.7 Version History: IMPLEMENTATION COMPLETE / MANUAL VERIFICATION PARTIAL.
 - MVP 0.8 Local Backup/Restore: COMPLETE; Google Drive is blocked by missing OAuth configuration.
-- MVP 0.9 Windows portable launcher preparation: COMPLETE for the local launcher scope; native EXE remains future work.
-- Current release name: `Noma 0.9 Beta` (`0.9.0-local.0`).
+- MVP 0.9 Windows portable launcher preparation: COMPLETE.
+- MVP 1.0 portable Noma.exe: IMPLEMENTATION COMPLETE; executable signing and an installer remain future work.
+- Current release name: `Noma 1.0 Beta` (`1.0.0-beta.0`).
 
 ## Implemented features
 

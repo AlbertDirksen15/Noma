@@ -1,5 +1,12 @@
 # Changelog
 
+## Noma 1.0 Beta — 1.0.0-beta.0
+
+- Added native `Noma.exe` as the primary Windows launcher.
+- Bundled the Node.js runtime, so Node.js is no longer a destination-computer requirement.
+- Added `npm run build:windows` as an alias for the portable Windows build.
+- Kept Noma fully offline and localhost-only; executable signing and an installer are deferred.
+
 ## Noma 0.9 Beta — 0.9.0-local.0
 
 - Added Windows-friendly `Noma.cmd` and `Noma.ps1` launchers.

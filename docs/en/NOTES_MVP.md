@@ -20,7 +20,11 @@ The local workspace can be exported and restored as a versioned JSON file contai
 
 `npm run desktop` builds the existing frontend, serves it through a Node server bound only to `127.0.0.1:3847` (or the next free port), and opens the normal browser. `npm run desktop:serve` serves without opening a browser. This is not a cloud backend or native EXE packaging.
 
-For Windows portable output, run `npm run build:portable`. The ignored `release/Noma-portable/` folder contains `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, the production `dist/` and the local server. Node.js must be installed; a bundled `Noma.exe` is a future packaging step.
+## Noma 1.0 Beta
+
+`npm run build:windows` creates `release/Noma-portable/Noma.exe` and bundles its Node runtime beside the static UI. Double-click `Noma.exe` to run Noma offline without a separate Node.js installation. Keep the complete portable folder together. It is unsigned and has no installer yet.
+
+For Windows portable output, run `npm run build:windows`. The ignored `release/Noma-portable/` folder contains `Noma.exe`, its bundled runtime, fallback launch scripts, `README_RUN.txt`, the production `dist/` and the local server. Node.js is not required on the destination computer.
 
 ## MVP 0.9 portable verification — 0.9.0-local.0
 

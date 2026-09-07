@@ -1,8 +1,22 @@
 import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 export const portableRoot = (projectDir = process.cwd()) => resolve(projectDir, 'release', 'Noma-portable');
+
+const cscPath = () => resolve(process.env.WINDIR ?? 'C:\\Windows', 'Microsoft.NET', 'Framework64', 'v4.0.30319', 'csc.exe');
+
+export const buildWindowsLauncher = (root, target, compiler = cscPath()) => {
+  const source = resolve(root, 'scripts', 'NomaLauncher.cs');
+  if (!existsSync(source)) throw new Error(`Native launcher source is missing: ${source}`);
+  if (!existsSync(compiler)) throw new Error(`Windows C# compiler is missing: ${compiler}`);
+  try {
+    execFileSync(compiler, ['/nologo', '/target:exe', `/out:${resolve(target, 'Noma.exe')}`, source], { stdio: 'pipe' });
+  } catch (error) {
+    throw new Error(`Could not build Noma.exe: ${error instanceof Error ? error.message : error}`);
+  }
+};
 
 export const buildPortable = (projectDir = process.cwd()) => {
   const root = resolve(projectDir);
@@ -21,6 +35,8 @@ export const buildPortable = (projectDir = process.cwd()) => {
   cpSync(resolve(root, 'Noma.cmd'), resolve(target, 'Noma.cmd'));
   cpSync(resolve(root, 'Noma.ps1'), resolve(target, 'Noma.ps1'));
   cpSync(resolve(root, 'README_RUN.txt'), resolve(target, 'README_RUN.txt'));
+  cpSync(process.execPath, resolve(target, 'runtime', 'node.exe'));
+  buildWindowsLauncher(root, target);
   return target;
 };
 

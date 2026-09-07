@@ -25,6 +25,10 @@ Für einen portablen Windows-Ordner führt man `npm run build:portable` aus. Der
 
 ## MVP 0.9 — Portable, 0.9.0-local.0
 
+## Noma 1.0 Beta
+
+`npm run build:windows` erstellt `release/Noma-portable/Noma.exe` und legt die Node-Laufzeit daneben ab. Noma.exe startet Noma offline ohne separat installiertes Node.js. Der gesamte portable Ordner muss zusammen bleiben. Eine Signatur und ein Windows-Installer folgen später.
+
 Erstellen: `npm run build:portable`. Den gesamten Ordner `release/Noma-portable` mit Noma.cmd, Noma.ps1, README_RUN.txt, dist und server kopieren. Node.js 22.12+ oder 24 LTS muss im PATH installiert sein. Auf dem Zielcomputer ist kein npm install erforderlich. Noch keine gebündelte oder signierte EXE.
 
 Start mit Noma.cmd; der Browser öffnet sich automatisch. Der Server bindet nur an 127.0.0.1:3847 und versucht bei Belegung den nächsten Port. NOMA_PORT überschreibt den Startport. Mit Strg+C im Terminal beenden; das Schließen des Browsers beendet den Server nicht. Noma.ps1 unterliegt der PowerShell-Ausführungsrichtlinie. Vor erneutem Erstellen den Server beenden.

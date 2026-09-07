@@ -25,7 +25,7 @@
 
 ## Next
 
-- MVP 1.0: optional bundled Windows EXE/installer packaging.
+- MVP 1.0: COMPLETE — portable `Noma.exe` with an included Node runtime; signing and an installer remain future work.
 - MVP 1.1: Themes & Plugin Foundation — declarative theme packages, plugin
   manifests, the first safe actions/filters and an extension-management screen.
 

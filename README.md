@@ -2,7 +2,7 @@
 
 Local-first notes, projects, planning and time tracking app.
 
-Current release name: **Noma 0.9 Beta** (`0.9.0-local.0`).
+Current release name: **Noma 1.0 Beta** (`1.0.0-beta.0`).
 
 ## License and extensions
 
@@ -44,7 +44,7 @@ Create a portable folder with the production build and Windows launchers:
 npm run build:portable
 ```
 
-The generated `release/Noma-portable/` contains `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, the static `dist/` build and the local server script. The generated folder is ignored by Git. Node.js must be installed; a future `Noma.exe` may bundle the runtime.
+The generated `release/Noma-portable/` contains `Noma.exe`, its bundled `runtime/node.exe`, fallback launch scripts, `README_RUN.txt`, the static `dist/` build and the local server. The generated folder is ignored by Git. Node.js does not need to be installed on the destination computer.
 
 ## MVP 0.9 portable verification — 0.9.0-local.0
 
