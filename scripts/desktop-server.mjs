@@ -74,18 +74,35 @@ export const startDesktopServer = ({ distDir = resolve(process.cwd(), 'dist'), p
   tryPort(port);
 });
 
+export const ensureDist = (distDir) => {
+  const indexPath = resolve(distDir, 'index.html');
+  if (!existsSync(indexPath)) throw new Error(`Build output is missing: ${indexPath}. Run npm run build first.`);
+  return indexPath;
+};
+
 export const openBrowser = (url) => {
-  if (process.platform === 'win32') spawn('cmd.exe', ['/c', 'start', '', url], { detached: true, stdio: 'ignore' }).unref();
-  else if (process.platform === 'darwin') spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
-  else spawn('xdg-open', [url], { detached: true, stdio: 'ignore' }).unref();
+  const child = process.platform === 'win32'
+    ? spawn('cmd.exe', ['/c', 'start', '', url], { detached: true, stdio: 'ignore' })
+    : process.platform === 'darwin'
+      ? spawn('open', [url], { detached: true, stdio: 'ignore' })
+      : spawn('xdg-open', [url], { detached: true, stdio: 'ignore' });
+  child.on('error', (error) => console.error(`Could not open browser automatically: ${error.message}`));
+  child.unref();
 };
 
 const isMain = process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url;
 if (isMain) {
   const portArg = process.argv.find((argument) => argument.startsWith('--port='));
+  const distArg = process.argv.find((argument) => argument.startsWith('--dist='));
   const port = portArg ? Number(portArg.slice('--port='.length)) : Number(process.env.NOMA_PORT ?? DEFAULT_DESKTOP_PORT);
+  const distDir = distArg ? resolve(distArg.slice('--dist='.length)) : resolve(process.cwd(), 'dist');
   const shouldOpen = process.argv.includes('--open');
-  startDesktopServer({ port }).then(({ port: actualPort }) => {
+  try { ensureDist(distDir); } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  }
+  if (process.exitCode) process.exit();
+  startDesktopServer({ distDir, port }).then(({ port: actualPort }) => {
     const url = `http://${DESKTOP_HOST}:${actualPort}`;
     console.log(`Noma desktop mode listening on ${url}`);
     if (actualPort !== port) console.log(`Port ${port} was busy; selected ${actualPort}`);

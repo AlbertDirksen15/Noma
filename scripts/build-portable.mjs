@@ -1,0 +1,31 @@
+import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+export const portableRoot = (projectDir = process.cwd()) => resolve(projectDir, 'release', 'Noma-portable');
+
+export const buildPortable = (projectDir = process.cwd()) => {
+  const root = resolve(projectDir);
+  const dist = resolve(root, 'dist');
+  if (!existsSync(resolve(dist, 'index.html'))) throw new Error('Build output is missing. Run npm run build first.');
+  const target = portableRoot(root);
+  rmSync(target, { recursive: true, force: true });
+  mkdirSync(target, { recursive: true });
+  cpSync(dist, resolve(target, 'dist'), { recursive: true });
+  cpSync(resolve(root, 'scripts', 'desktop-server.mjs'), resolve(target, 'server', 'desktop-server.mjs'));
+  cpSync(resolve(root, 'Noma.cmd'), resolve(target, 'Noma.cmd'));
+  cpSync(resolve(root, 'Noma.ps1'), resolve(target, 'Noma.ps1'));
+  cpSync(resolve(root, 'README_RUN.txt'), resolve(target, 'README_RUN.txt'));
+  return target;
+};
+
+const isMain = process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url;
+if (isMain) {
+  try {
+    const target = buildPortable();
+    console.log(`Portable Noma folder created: ${target}`);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  }
+}

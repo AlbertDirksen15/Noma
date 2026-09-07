@@ -3,7 +3,7 @@ import { get } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { startDesktopServer } from './desktop-server.mjs';
+import { ensureDist, startDesktopServer } from './desktop-server.mjs';
 
 const runningServers: Array<{ close: () => void }> = [];
 const temporaryDirectories: string[] = [];
@@ -35,6 +35,8 @@ describe('desktop local server', () => {
     expect((await request(`http://127.0.0.1:${started.port}/assets/app.js`)).status).toBe(200);
     expect((await request(`http://127.0.0.1:${started.port}/note/example`)).body).toContain('Noma');
     expect((await request(`http://127.0.0.1:${started.port}/missing.js`)).status).toBe(404);
+    expect((await request(`http://127.0.0.1:${started.port}/..%2Fpackage.json`)).status).toBe(403);
+    expect(started.server.address()).toMatchObject({ address: '127.0.0.1' });
   });
 
   it('selects the next localhost port when the default is occupied', async () => {
@@ -47,5 +49,9 @@ describe('desktop local server', () => {
     runningServers.push(started.server);
 
     expect(started.port).toBe(occupied.port + 1);
+  });
+
+  it('reports a clear error when the production build is missing', () => {
+    expect(() => ensureDist(join(tmpdir(), 'noma-dist-does-not-exist'))).toThrow('Run npm run build first');
   });
 });
