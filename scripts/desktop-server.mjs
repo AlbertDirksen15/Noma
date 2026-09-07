@@ -63,9 +63,6 @@ export const createDesktopServer = (distDir) => createServer((request, response)
     if (!realpathSync(indexPath).startsWith(`${realpathSync(distDir)}${sep}`)) {
       response.writeHead(403); response.end('Forbidden'); return;
     }
-    if (!realpathSync(indexPath).startsWith(`${realpathSync(distDir)}${sep}`)) {
-      response.writeHead(403); response.end('Forbidden'); return;
-    }
     sendFile(response, indexPath);
   } catch (error) {
     response.writeHead(error instanceof URIError ? 400 : 500, { 'Content-Type': 'text/plain; charset=utf-8' });
