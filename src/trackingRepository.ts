@@ -1,4 +1,4 @@
-import { db, type TrackingSession } from './data';
+import { db, type TrackingSession } from './data';import { updateNoteFields } from './noteUpdateService';
 
 export type Clock = () => number;
 const now:Clock=()=>Date.now();
@@ -7,7 +7,7 @@ export const getActiveSession=()=>db.trackingSessions.where('status').equals('ru
 export const getOpenSession=async()=>{const sessions=await db.trackingSessions.toArray();return sessions.filter(s=>s.status==='running'||s.status==='paused').sort((a,b)=>b.updatedAt-a.updatedAt)[0]};
 export const getSessionsForNote=(noteId:string)=>db.trackingSessions.where('noteId').equals(noteId).sortBy('date');
 export const elapsed=(s:TrackingSession, clock:Clock=now)=>s.durationMs+(s.status==='running'&&s.startedAt!==null?Math.max(0,clock()-s.startedAt):0);
-export const setTrackingEnabled=async(noteId:string, enabled:boolean)=>{const note=await db.notes.get(noteId);if(!note)throw new Error('Заметка не найдена');await db.notes.put({...note,trackTime:enabled,updatedAt:Date.now()});return enabled};
+export const setTrackingEnabled=async(noteId:string, enabled:boolean)=>{if(!(await db.notes.get(noteId)))throw new Error('Заметка не найдена');await updateNoteFields(noteId,{trackTime:enabled});return enabled};
 export const startTracking=async(noteId:string, clock:Clock=now)=>{const note=await db.notes.get(noteId);if(!note)throw new Error('Заметка не найдена');if(note.deletedAt||note.archivedAt)throw new Error('Нельзя учитывать время архивной заметки или заметки в корзине');const active=await getActiveSession();if(active)await pauseTracking(active.id,clock);const session=makeSession(noteId,clock);await db.trackingSessions.add(session);return session};
 export const pauseTracking=async(id:string, clock:Clock=now)=>{const s=await db.trackingSessions.get(id);if(!s||s.status!=='running')return s;if(s.startedAt!==null)s.durationMs+=Math.max(0,clock()-s.startedAt);const updated={...s,startedAt:null,status:'paused' as const,updatedAt:clock()};await db.trackingSessions.put(updated);return updated};
 export const resumeTracking=async(id:string, clock:Clock=now)=>{const s=await db.trackingSessions.get(id);if(!s||s.status!=='paused')return s;const active=await getActiveSession();if(active)await pauseTracking(active.id,clock);const updated={...s,startedAt:clock(),status:'running' as const,updatedAt:clock()};await db.trackingSessions.put(updated);return updated};

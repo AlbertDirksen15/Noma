@@ -1,11 +1,13 @@
 import { db, newNote, type Note } from './data';
 import { stopActiveForSubtree } from './trackingRepository';
+import { updateNoteFields } from './noteUpdateService';
 export const getChildren=(parentId:string|null)=>db.notes.where('parentId').equals(parentId as string).toArray();
 export const getAncestors=async(id:string)=>{const out:Note[]=[];let n=await db.notes.get(id);while(n?.parentId){n=await db.notes.get(n.parentId);if(n)out.unshift(n)}return out};
 export const getDescendants=async(id:string)=>{const all=await db.notes.toArray(),out:Note[]=[];const walk=(parent:string)=>{for(const n of all.filter(x=>x.parentId===parent)){out.push(n);walk(n.id)}};walk(id);return out};
 export const canMoveNote=async(id:string,parentId:string|null)=>{if(id===parentId)return false; if(!parentId)return true;return !(await getDescendants(id)).some(n=>n.id===parentId)};
-export const moveNote=async(id:string,parentId:string|null)=>{if(!(await canMoveNote(id,parentId)))throw new Error('Нельзя переместить заметку в себя или собственного потомка');const n=await db.notes.get(id);if(!n)throw new Error('Заметка не найдена');await db.notes.put({...n,parentId,updatedAt:Date.now()});return {...n,parentId}};
+export const moveNote=async(id:string,parentId:string|null)=>{if(!(await canMoveNote(id,parentId)))throw new Error('Нельзя переместить заметку в себя или собственного потомка');const n=await db.notes.get(id);if(!n)throw new Error('Заметка не найдена');const updated=await updateNoteFields(id,{parentId});return updated};
 export const createChildNote=async(parentId:string|null)=>{const note=newNote({parentId});await db.notes.put(note);return note.id};
 export const createChildProject=async(parentId:string|null)=>{const note=newNote({parentId,isProject:true});await db.notes.put(note);return note.id};
 export const createProject=async(title:string, parentId:string|null=null)=>{const note=newNote({title:title.trim(),parentId,isProject:true});await db.notes.put(note);const saved=await db.notes.get(note.id);if(!saved)throw new Error('Проект не был подтверждён в IndexedDB');return saved};
 export const updateSubtree=(id:string,field:'archivedAt'|'deletedAt',value:number|null)=>getDescendants(id).then(async nodes=>{const root=await db.notes.get(id);const all=[root,...nodes].filter(Boolean) as Note[];if(value!==null)await stopActiveForSubtree(all.map(n=>n.id));for(const n of all)await db.notes.put({...n,[field]:value,updatedAt:Date.now()})});
+

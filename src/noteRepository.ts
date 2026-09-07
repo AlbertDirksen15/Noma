@@ -1,8 +1,12 @@
 import { db, newNote, searchNotes, type Note } from './data';
 import { stopActiveForNote } from './trackingRepository';
+import { updateNoteFields } from './noteUpdateService';
 
 export const createNote = (extra: Partial<Note> = {}) => db.notes.add(newNote(extra));
-export const updateNote = (note: Note) => db.notes.put({ ...note, updatedAt: Date.now() });
+export const updateNote = async (note: Note) => {
+  const { goalEnabled: _goalEnabled, targetHours: _targetHours, deadline: _deadline, goalStartDate: _goalStartDate, actualHoursAtGoalStart: _actualHoursAtGoalStart, goalUpdatedAt: _goalUpdatedAt, ...fields } = note;
+  return updateNoteFields(note.id, fields);
+};
 export const archiveNote = async (note: Note) => { await stopActiveForNote(note.id); return updateNote({ ...note, archivedAt: Date.now() }); };
 export const restoreArchive = (note: Note) => updateNote({ ...note, archivedAt: null });
 export const trashNote = async (note: Note) => { await stopActiveForNote(note.id); return updateNote({ ...note, deletedAt: Date.now() }); };
