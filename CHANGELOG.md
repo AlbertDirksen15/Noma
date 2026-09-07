@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.0
+
+- Added persistent snapshot-based history for significant Note and Project changes.
+- Added compact History panels with revision preview, full restore and title/content-only restore.
+- Revisions coalesce over a three-minute edit window and retain the latest 100 versions per Note.
+- Archive/Trash restore remains lifecycle recovery and is intentionally separate from Version Restore.
+- Permanent note and subtree deletion now removes associated revisions.
+
+## 0.6.0
+
+- Added persistent Pomodoro work-interval state with a compact SVG progress ring.
+- Pomodoro completion is a visual rhythm signal and never pauses or stops tracked time.
+
 ## 0.5.0
 
 - Added migrated goal fields for Notes and Projects.
