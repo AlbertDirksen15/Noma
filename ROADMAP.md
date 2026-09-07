@@ -8,7 +8,7 @@
 ## Next
 
 - MVP 0.4: time tracking (completed).
-- MVP 0.5: goals, deadlines, dynamic pace and plan vs actual (implementation in progress).
+- MVP 0.5: goals, deadlines, dynamic pace and compact tracking integration (completed). Advanced analytics remain out of scope.
 
 ## MVP 0.4 Definition of Done
 

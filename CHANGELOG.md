@@ -1,10 +1,12 @@
 # Changelog
 
-## 0.5.0-pre
+## 0.5.0
 
 - Added migrated goal fields for Notes and Projects.
-- Added dynamic pace, baseline, forecast and plan-vs-actual calculation services.
-- Added goal controls and a lightweight SVG plan-vs-actual view.
+- Added persistent target hours and deadlines with edit/delete controls.
+- Added total tracked time, tracked today and dynamic required hours/day in the tracking block.
+- Added canonical goal-safe Note save flow across embedded, Note and Project editors.
+- Plan-vs-actual graph, ahead/behind and forecast are intentionally out of scope for MVP 0.5.
 
 ## 0.4.0
 

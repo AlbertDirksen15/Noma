@@ -6,4 +6,4 @@ Implemented: project routes, breadcrumbs, child note/project creation, direct no
 
 Time tracking is an optional capability on Notes and Projects. Sessions are persisted in IndexedDB, support Start/Pause/Resume/Stop, manual entries, totals and history. Only one timer may run globally.
 
-Goals use a fixed local calendar deadline. Pace is recalculated from remaining hours and inclusive calendar days; the goal panel also shows baseline plan, actual progress, ahead/behind status and a lightweight forecast/graph.
+Goals use persistent target hours and a fixed local calendar deadline. Pace is recalculated from remaining hours and inclusive calendar days. The compact UI shows the goal/deadline and remaining time, while the tracking block shows total time, time tracked today and required hours per day. Graphs, ahead/behind and forecast are intentionally outside MVP 0.5.

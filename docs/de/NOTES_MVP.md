@@ -7,4 +7,4 @@ Implementiert: Projektrouten, Breadcrumbs, untergeordnete Notizen/Projekte, dire
 
 Zeitmessung ist eine optionale Fähigkeit jeder Notiz und jedes Projekts. Sitzungen werden in IndexedDB gespeichert und unterstützen Start/Pause/Resume/Stop, manuelle Einträge, Summen und Verlauf. Global läuft nur ein Timer.
 
-Ziele verwenden ein fixes lokales Kalenderdatum. Das tägliche Tempo wird aus Reststunden und Kalendertagen berechnet; der Zielbereich zeigt Baseline, Ist-Fortschritt, Vorsprung/Rückstand, Prognose und ein einfaches Diagramm.
+Ziele speichern Zielstunden und ein fixes lokales Kalenderdatum. Das tägliche Tempo wird aus Reststunden und Kalendertagen berechnet. Die kompakte Oberfläche zeigt Ziel, Frist und Restzeit; der Zeitblock zeigt Gesamtzeit, heutige Zeit und benötigte Stunden pro Tag. Diagramm, Vorsprung/Rückstand und Prognose gehören bewusst nicht zum MVP 0.5.
