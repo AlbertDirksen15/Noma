@@ -99,12 +99,12 @@ Noma is a local-first personal productivity app built around universal notes. It
 ## Current Git status
 
 - Branch: `feature/desktop-launcher`.
-- Latest committed launcher/docs checkpoint: `5024f3e`.
+- Verified launcher/test checkpoint: `1d7f819` (2026-09-07).
 - Package version: `0.9.0-local.0`.
 - Release tag: `v0.8.0-local` on `f6b5e9f`.
 - Release checkpoint exists.
-- Remote `origin` is not configured.
-- No push has been performed.
+- Remote `origin`: https://github.com/AlbertDirksen15/Noma.git.
+- No push was performed during this MVP 0.9 task; earlier remote push state was not independently verified.
 
 ## What not to do now
 
@@ -117,9 +117,7 @@ Noma is a local-first personal productivity app built around universal notes. It
 
 - Manually test `npm run desktop` on Windows.
 - Run `npm run build:portable` and test `release/Noma-portable/Noma.cmd` on Windows.
-- Add a GitHub `origin` remote.
-- Push `develop` and the release tag after authentication is available.
-- Optionally configure a Google OAuth Client ID.
+- Push only after separate user authorization. Do not create a new tag or release without authorization.
 - Later package Noma as `Noma.exe`.
 
 ## MVP 0.9 portable verification — 0.9.0-local.0
@@ -133,3 +131,5 @@ Keep the terminal open. Ctrl+C gracefully stops the listener and allows active r
 Data is stored in browser IndexedDB, not in the portable folder. Browser profile and port are part of the storage origin: a fallback port can appear empty. Return to the original port/profile or use Workspace Export/Import. Export before moving computers. Stop Noma before rebuilding. If Windows prevents cleanup, the builder may reuse the folder; inspect it before distributing.
 
 Checks: npm run lint, npm run typecheck, npm test, npm run build, npm run build:portable. Tests cover port fallback/config, localhost binding, index/assets/SPA, traversal, missing output, graceful shutdown, copying real templates and stale asset removal. No push, tag or remote release is part of this checkpoint.
+
+Final verification on 2026-09-07: lint, typecheck, 76 tests across 12 files, build and build:portable passed using npm.cmd (the local npm.ps1 wrapper resolved a broken global npm path). Packaged templates and production assets match their sources byte-for-byte; packaged server HTTP index/SPA smoke and shutdown passed on Windows, bound to 127.0.0.1. Windows cleanup reused the output directory; inspection found only the expected seven files. Double-click launch and ordinary-browser interaction remain manually unverified. Existing uncommitted src/App.tsx and src/styles.css changes were preserved and are included in the working-tree build, but excluded from launcher commits.
