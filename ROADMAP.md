@@ -16,6 +16,12 @@
 - Planned visible Google Drive folder: `Google Drive / Noma/`; private `appDataFolder` is out of scope.
 - GOOGLE DRIVE BLOCKED BY OAUTH — upload remains blocked until OAuth client credentials are configured.
 
+## Desktop local launcher
+
+- Implemented a minimal Node static server for the existing Vite build.
+- Binds to localhost only, defaults to port `3847`, falls back to the next free port and can open the normal browser.
+- Native Windows EXE/installer packaging remains outside this stabilization step.
+
 ## Next
 
 - MVP 0.9: after MVP 0.8 scope is complete.
