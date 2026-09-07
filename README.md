@@ -2,6 +2,19 @@
 
 Local-first notes, projects, planning and time tracking app.
 
+Current release name: **Noma 0.9 Beta** (`0.9.0-local.0`).
+
+## License and extensions
+
+Noma Core is licensed under [GPL-3.0-or-later](LICENSE). Noma is designed to
+be extended without modifying Core: themes will control appearance and plugins
+will add optional functionality through a documented API. The planned extension
+model and publishing rules are in [PLUGINS_AND_THEMES.md](PLUGINS_AND_THEMES.md).
+
+Official Noma Mobile, Noma Sync and a future reviewed extension catalogue are
+separate products. The Noma name and logo are not registered trademarks in
+this repository.
+
 ## MVP 0.1
 
 React + TypeScript + Vite prototype with a Keep-inspired notes screen and local persistence through IndexedDB/Dexie. The application runs locally in a browser or through the lightweight local desktop launcher.

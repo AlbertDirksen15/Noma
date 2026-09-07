@@ -1,6 +1,6 @@
 # Noma Release Notes
 
-## v0.9.0-local.0 preparation
+## Noma 0.9 Beta — v0.9.0-local.0
 
 - Added Windows `Noma.cmd` and PowerShell `Noma.ps1` launchers.
 - Added `npm run build:portable`, producing the ignored `release/Noma-portable/` folder.

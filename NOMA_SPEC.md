@@ -10,6 +10,19 @@ Noma is a local-first application for notes, projects, planning and time trackin
 - Simple default UI; advanced capabilities remain optional.
 - Architecture should leave room for sync, mobile, plugins, themes and Steam packaging.
 
+## Open Core and extensions
+
+Noma Core is GPL-3.0-or-later. The project follows a WordPress-style model:
+Core stays independently updateable while themes and plugins extend it through
+a documented API instead of changing Core files. Themes will begin as
+declarative design-token packages. Plugins will declare their identity,
+compatibility and permissions, and use controlled actions, filters, UI slots
+and workspace APIs. The first plugin SDK is a post-launch milestone.
+
+Noma Mobile, Noma Sync and a future reviewed extension catalogue are separate
+official products. This repository does not claim a registered trademark for
+the Noma name or logo.
+
 ## Roadmap
 
 0.1 notes and persistence; 0.2 today/inbox/archive/trash; 0.3 nested notes/projects (completed); 0.4 time tracking; 0.5 goals/deadlines and dynamic pace; 0.6 Pomodoro; 0.7 note version history and restore; 0.8 local workspace backup with a blocked Google Drive prototype; 0.9 Windows portable launcher preparation; 1.0 Windows launcher packaging.

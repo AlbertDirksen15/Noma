@@ -11,6 +11,9 @@ Noma is a local-first personal productivity app built around universal notes. It
 - No required cloud backend.
 - Google Keep-like simplicity.
 - Keep the core extensible for later plugins, themes, sync and platform shells.
+- Noma Core is GPL-3.0-or-later and will follow a WordPress-style extension
+  model: themes and plugins extend Core through documented APIs, not edits to
+  Core files.
 
 ## UI and design
 
@@ -27,6 +30,7 @@ Noma is a local-first personal productivity app built around universal notes. It
 - MVP 0.7 Version History: IMPLEMENTATION COMPLETE / MANUAL VERIFICATION PARTIAL.
 - MVP 0.8 Local Backup/Restore: COMPLETE; Google Drive is blocked by missing OAuth configuration.
 - MVP 0.9 Windows portable launcher preparation: COMPLETE for the local launcher scope; native EXE remains future work.
+- Current release name: `Noma 0.9 Beta` (`0.9.0-local.0`).
 
 ## Implemented features
 
@@ -85,6 +89,9 @@ Noma is a local-first personal productivity app built around universal notes. It
 - Themes, templates and template parts.
 - Permissions and sandboxing.
 - A future plugin SDK after the core is stable.
+- Themes/plugins for the future official catalogue must be GPL-compatible.
+- Noma Mobile, Sync and the catalogue are separate official products.
+- The Noma name/logo have no registered trademark claim in this repository.
 
 ## Future ideas
 

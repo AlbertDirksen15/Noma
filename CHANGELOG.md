@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.0-local.0
+## Noma 0.9 Beta — 0.9.0-local.0
 
 - Added Windows-friendly `Noma.cmd` and `Noma.ps1` launchers.
 - Added `npm run build:portable` for an ignored `release/Noma-portable/` folder.
