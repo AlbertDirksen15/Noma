@@ -9,4 +9,5 @@ export const trashNote = async (note: Note) => { await stopActiveForNote(note.id
 export const restoreTrash = (note: Note) => updateNote({ ...note, deletedAt: null });
 export const permanentlyDeleteNote = (id: string) => db.notes.delete(id);
 export const visibleNotes = (notes: Note[]) => notes.filter(note => !note.archivedAt && !note.deletedAt);
+export const todayNotes = (notes: Note[]) => visibleNotes(notes).filter(note => note.inToday);
 export { searchNotes };
