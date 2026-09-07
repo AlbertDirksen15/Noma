@@ -12,7 +12,7 @@ Noma is a local-first application for notes, projects, planning and time trackin
 
 ## Roadmap
 
-0.1 notes and persistence; 0.2 today/inbox/archive/trash; 0.3 nested notes/projects (completed); 0.4 time tracking; 0.5 goals/deadlines and dynamic pace; 0.6 Pomodoro; 0.7 note version history and restore; 0.8 local workspace backup with a blocked Google Drive prototype; desktop local launcher stabilization; 1.0 Windows launcher packaging.
+0.1 notes and persistence; 0.2 today/inbox/archive/trash; 0.3 nested notes/projects (completed); 0.4 time tracking; 0.5 goals/deadlines and dynamic pace; 0.6 Pomodoro; 0.7 note version history and restore; 0.8 local workspace backup with a blocked Google Drive prototype; 0.9 Windows portable launcher preparation; 1.0 Windows launcher packaging.
 
 MVP 0.8 starts with a versioned local workspace JSON and visible Backup/Restore flow. The planned Drive location is the user-readable `Google Drive / Noma/` folder; private `appDataFolder` is intentionally excluded. Drive upload requires configured OAuth credentials.
 
@@ -23,3 +23,5 @@ Android, iOS and Steam are post-desktop milestones. The core remains a local web
 ## Desktop local mode
 
 The current desktop shell is intentionally minimal: `npm run desktop` builds the existing Vite frontend, serves `dist` from a Node HTTP server bound only to `127.0.0.1`, selects the next available port after `3847`, and opens the normal browser. It has no cloud backend, remote API or native UI. Windows EXE/installer packaging remains a later step.
+
+MVP 0.9 adds `npm run build:portable`, which creates an ignored `release/Noma-portable/` folder containing `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, `dist/` and the server script. The portable launcher requires an installed Node.js runtime.

@@ -19,3 +19,5 @@ The local workspace can be exported and restored as a versioned JSON file contai
 ## Desktop local mode
 
 `npm run desktop` builds the existing frontend, serves it through a Node server bound only to `127.0.0.1:3847` (or the next free port), and opens the normal browser. `npm run desktop:serve` serves without opening a browser. This is not a cloud backend or native EXE packaging.
+
+For Windows portable output, run `npm run build:portable`. The ignored `release/Noma-portable/` folder contains `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, the production `dist/` and the local server. Node.js must be installed; a bundled `Noma.exe` is a future packaging step.

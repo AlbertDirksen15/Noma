@@ -26,7 +26,7 @@ Noma is a local-first personal productivity app built around universal notes. It
 - MVP 0.6 Pomodoro: IMPLEMENTATION COMPLETE / MANUAL VERIFICATION PARTIAL.
 - MVP 0.7 Version History: IMPLEMENTATION COMPLETE / MANUAL VERIFICATION PARTIAL.
 - MVP 0.8 Local Backup/Restore: COMPLETE; Google Drive is blocked by missing OAuth configuration.
-- A local desktop launcher was added after the `v0.8.0-local` checkpoint.
+- MVP 0.9 Windows portable launcher preparation: COMPLETE for the local launcher scope; native EXE remains future work.
 
 ## Implemented features
 
@@ -42,6 +42,7 @@ Noma is a local-first personal productivity app built around universal notes. It
 - Workspace/device metadata and tombstones.
 - Local Backup/Restore UI.
 - Local desktop launcher with localhost serving, port fallback and browser opening.
+- Windows portable folder build with `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, `dist/` and the local server.
 
 ## Important product decisions
 
@@ -98,7 +99,7 @@ Noma is a local-first personal productivity app built around universal notes. It
 ## Current Git status
 
 - Branch: `develop`.
-- Latest commit at the time of this memory: `29cfb1b` (or a newer documentation commit if this file is updated later).
+- Latest commit at the time of this memory: update this line after the next commit.
 - Release tag: `v0.8.0-local` on `f6b5e9f`.
 - Release checkpoint exists.
 - Remote `origin` is not configured.
@@ -114,6 +115,7 @@ Noma is a local-first personal productivity app built around universal notes. It
 ## Next recommended steps
 
 - Manually test `npm run desktop` on Windows.
+- Run `npm run build:portable` and test `release/Noma-portable/Noma.cmd` on Windows.
 - Add a GitHub `origin` remote.
 - Push `develop` and the release tag after authentication is available.
 - Optionally configure a Google OAuth Client ID.

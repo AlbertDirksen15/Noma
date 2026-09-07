@@ -1,5 +1,12 @@
 # Noma Release Notes
 
+## v0.9.0-local.0 preparation
+
+- Added Windows `Noma.cmd` and PowerShell `Noma.ps1` launchers.
+- Added `npm run build:portable`, producing the ignored `release/Noma-portable/` folder.
+- Portable output contains the production `dist/`, localhost server, launchers and `README_RUN.txt`.
+- Node.js remains a runtime requirement; this is not a bundled, signed or installed `Noma.exe`.
+
 ## v0.8.0-local
 
 This local checkpoint contains the completed MVP 0.3–0.8 implementation currently merged into `develop`.

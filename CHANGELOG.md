@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0-local.0
+
+- Added Windows-friendly `Noma.cmd` and `Noma.ps1` launchers.
+- Added `npm run build:portable` for an ignored `release/Noma-portable/` folder.
+- Added portable run instructions and coverage for launcher source files.
+- Kept the server localhost-only and retained the browser-based local-first architecture.
+
 ## Unreleased
 
 - Added a minimal localhost-only desktop launcher for the existing production frontend.

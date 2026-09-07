@@ -20,3 +20,5 @@ Noma хранит persistent snapshots перед значимым измене�
 ## Локальный desktop-режим
 
 Команда `npm run desktop` собирает существующий frontend, запускает Node-сервер только на `127.0.0.1:3847` (или следующем свободном порту) и открывает обычный браузер. `npm run desktop:serve` запускает сервер без открытия браузера. Это не cloud backend и не нативный EXE.
+
+Для portable-папки Windows выполните `npm run build:portable`. В игнорируемой Git папке `release/Noma-portable/` будут `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, production `dist/` и локальный сервер. Требуется установленный Node.js; bundled `Noma.exe` — будущий этап.

@@ -20,3 +20,5 @@ Der lokale Workspace kann als versionierte JSON-Datei exportiert und wiederherge
 ## Lokaler Desktop-Modus
 
 `npm run desktop` baut das bestehende Frontend, startet einen Node-Server ausschließlich auf `127.0.0.1:3847` (oder dem nächsten freien Port) und öffnet den normalen Browser. `npm run desktop:serve` startet den Server ohne Browseröffnung. Dies ist kein Cloud-Backend und kein natives EXE.
+
+Für einen portablen Windows-Ordner führt man `npm run build:portable` aus. Der von Git ignorierte Ordner `release/Noma-portable/` enthält `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, den production-`dist/`-Ordner und den lokalen Server. Node.js muss installiert sein; ein gebündeltes `Noma.exe` ist ein späterer Packaging-Schritt.

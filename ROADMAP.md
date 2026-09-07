@@ -16,15 +16,16 @@
 - Planned visible Google Drive folder: `Google Drive / Noma/`; private `appDataFolder` is out of scope.
 - GOOGLE DRIVE BLOCKED BY OAUTH — upload remains blocked until OAuth client credentials are configured.
 
-## Desktop local launcher
+## MVP 0.9 — Windows portable launcher preparation
 
 - Implemented a minimal Node static server for the existing Vite build.
 - Binds to localhost only, defaults to port `3847`, falls back to the next free port and can open the normal browser.
-- Native Windows EXE/installer packaging remains outside this stabilization step.
+- `npm run build:portable` creates an ignored `release/Noma-portable/` folder with Windows launchers, docs, `dist/` and the server script.
+- Native Windows EXE/installer packaging remains a later step; Node.js is required for this portable launcher.
 
 ## Next
 
-- MVP 0.9: after MVP 0.8 scope is complete.
+- MVP 1.0: optional bundled Windows EXE/installer packaging.
 
 ## MVP 0.4 Definition of Done
 
