@@ -16,3 +16,7 @@ Noma хранит persistent snapshots перед значимым измене�
 ## Резервная копия рабочего пространства (MVP 0.8)
 
 Локальное рабочее пространство можно экспортировать и восстановить как versioned JSON: заметки, tracking sessions, revisions и tombstones, а также workspace/device identity. Планируемое место на Drive — видимая пользовательская папка `Google Drive / Noma/`; `appDataFolder` не используется. Загрузка в Drive недоступна до настройки OAuth credentials.
+
+## Локальный desktop-режим
+
+Команда `npm run desktop` собирает существующий frontend, запускает Node-сервер только на `127.0.0.1:3847` (или следующем свободном порту) и открывает обычный браузер. `npm run desktop:serve` запускает сервер без открытия браузера. Это не cloud backend и не нативный EXE.

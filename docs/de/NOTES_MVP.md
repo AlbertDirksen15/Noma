@@ -16,3 +16,7 @@ Noma speichert dauerhafte Snapshots vor bedeutenden Änderungen an Notizen oder 
 ## Workspace-Backup (MVP 0.8)
 
 Der lokale Workspace kann als versionierte JSON-Datei exportiert und wiederhergestellt werden: Notizen, Tracking-Sessions, Revisionen, Tombstones sowie Workspace-/Geräteidentität. Das geplante Drive-Ziel ist der sichtbare Benutzerordner `Google Drive / Noma/`; `appDataFolder` wird nicht verwendet. Der Drive-Upload bleibt bis zur Konfiguration von OAuth-Anmeldedaten deaktiviert.
+
+## Lokaler Desktop-Modus
+
+`npm run desktop` baut das bestehende Frontend, startet einen Node-Server ausschließlich auf `127.0.0.1:3847` (oder dem nächsten freien Port) und öffnet den normalen Browser. `npm run desktop:serve` startet den Server ohne Browseröffnung. Dies ist kein Cloud-Backend und kein natives EXE.

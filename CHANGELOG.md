@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added a minimal localhost-only desktop launcher for the existing production frontend.
+- Added automatic fallback to the next available port after `3847` and optional browser opening.
+- Added tests for static serving, SPA fallback, and occupied-port handling.
+
 ## 0.8.0
 
 - Added versioned workspace JSON export/import for Notes, tracking sessions, revisions and tombstones.
