@@ -20,4 +20,6 @@ if not exist "%~dp0dist\index.html" (
 set "NOMA_SERVER=%~dp0server\desktop-server.mjs"
 if not exist "%NOMA_SERVER%" set "NOMA_SERVER=%~dp0scripts\desktop-server.mjs"
 node "%NOMA_SERVER%" --dist="%~dp0dist" --open
-if errorlevel 1 pause
+set "NOMA_EXIT=%ERRORLEVEL%"
+if not "%NOMA_EXIT%"=="0" pause
+exit /b %NOMA_EXIT%
