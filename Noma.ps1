@@ -13,5 +13,7 @@ if (-not (Test-Path (Join-Path $PSScriptRoot 'dist\index.html'))) {
   exit 1
 }
 
-node (Join-Path $PSScriptRoot 'server\desktop-server.mjs') "--dist=$(Join-Path $PSScriptRoot 'dist')" --open
+$server = Join-Path $PSScriptRoot 'server\desktop-server.mjs'
+if (-not (Test-Path $server)) { $server = Join-Path $PSScriptRoot 'scripts\desktop-server.mjs' }
+node $server "--dist=$(Join-Path $PSScriptRoot 'dist')" --open
 if ($LASTEXITCODE -ne 0) { Read-Host 'Press Enter to close' }
