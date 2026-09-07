@@ -14,6 +14,8 @@ Noma is a local-first application for notes, projects, planning and time trackin
 
 0.1 notes and persistence; 0.2 today/inbox/archive/trash; 0.3 nested notes/projects (completed); 0.4 time tracking; 0.5 goals/deadlines and dynamic pace; 0.6 Pomodoro; 0.7 note version history and restore; 0.8 Google Drive prototype; 1.0 Windows launcher.
 
+MVP 0.8 starts with a versioned local workspace JSON and visible Backup/Restore flow. The planned Drive location is the user-readable `Google Drive / Noma/` folder; private `appDataFolder` is intentionally excluded. Drive upload requires configured OAuth credentials.
+
 ## Later platforms
 
 Android, iOS and Steam are post-desktop milestones. The core remains a local web UI served by a local process; platform-specific launchers or embedded views may be added later without changing the data model.

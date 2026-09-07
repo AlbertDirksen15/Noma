@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0
+
+- Added versioned workspace JSON export/import for Notes, tracking sessions, revisions and tombstones.
+- Added workspace/device identity and schema version metadata in Dexie.
+- Added local Backup/Restore UI.
+- Selected visible `Google Drive / Noma/` storage; Drive upload is blocked until OAuth credentials are configured.
+
 ## 0.7.0
 
 - Added persistent snapshot-based history for significant Note and Project changes.

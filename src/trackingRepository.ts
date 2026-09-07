@@ -1,6 +1,7 @@
 import { createPomodoro, startPomodoro, pausePomodoro, stopPomodoro } from './pomodoro';
 import { reconcilePomodoro } from './pomodoroRepository';
 import { db, type TrackingSession } from './data';import { updateNoteFields } from './noteUpdateService';
+import { createTombstone } from './workspaceRepository';
 
 export type Clock = () => number;
 const now:Clock=()=>Date.now();
@@ -15,7 +16,7 @@ export const pauseTracking=async(id:string, clock:Clock=now)=>{await reconcilePo
 export const resumeTracking=async(id:string, clock:Clock=now)=>{const s=await db.trackingSessions.get(id);if(!s||s.status!=='paused')return s;const active=await getActiveSession();if(active)await pauseTracking(active.id,clock);const updated={...s,startedAt:clock(),status:'running' as const,updatedAt:clock(),pomodoro:startPomodoro(s.pomodoro??createPomodoro(),clock())};await db.trackingSessions.put(updated);return updated};
 export const stopTracking=async(id:string, clock:Clock=now)=>{await reconcilePomodoro(clock());const s=await db.trackingSessions.get(id);if(!s||s.status==='completed')return s;const duration=elapsed(s,clock);const t=clock();const updated={...s,durationMs:duration,startedAt:null,endedAt:t,status:'completed' as const,updatedAt:t,pomodoro:s.pomodoro?stopPomodoro(s.pomodoro):undefined};await db.trackingSessions.put(updated);return updated};
 export const addManualEntry=async(noteId:string,durationMs:number,date:number=Date.now(),comment='',clock:Clock=now)=>{if(durationMs<=0)throw new Error('Длительность должна быть больше нуля');const t=clock();const s:TrackingSession={id:crypto.randomUUID(),noteId,startedAt:null,endedAt:null,durationMs,status:'completed',createdAt:t,updatedAt:t,manual:true,date,comment};await db.trackingSessions.add(s);return s};
-export const deleteManualEntry=async(id:string)=>{const s=await db.trackingSessions.get(id);if(!s||!s.manual)throw new Error('Удалять можно только ручной замер');await db.trackingSessions.delete(id)};
+export const deleteManualEntry=async(id:string)=>{const s=await db.trackingSessions.get(id);if(!s||!s.manual)throw new Error('Удалять можно только ручной замер');await db.transaction('rw',db.trackingSessions,db.tombstones,async()=>{await createTombstone('trackingSession',id);await db.trackingSessions.delete(id)})};
 export const getTotalTrackedTime=async(noteId:string)=>{const sessions=await getSessionsForNote(noteId);return sessions.reduce((sum,s)=>sum+elapsed(s),0)};
 export const stopActiveForNote=async(noteId:string,clock:Clock=now)=>{const s=await db.trackingSessions.where('noteId').equals(noteId).and(x=>x.status==='running').first();if(s)await stopTracking(s.id,clock)};
 export const stopActiveForSubtree=async(noteIds:string[],clock:Clock=now)=>{for(const id of noteIds)await stopActiveForNote(id,clock)};

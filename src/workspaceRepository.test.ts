@@ -1,0 +1,16 @@
+import 'fake-indexeddb/auto';
+import { beforeEach,describe,expect,it } from 'vitest';
+import { db,newNote } from './data';
+import { permanentlyDeleteNote } from './noteRepository';
+import { createRevision } from './noteRevisionRepository';
+import { addManualEntry,deleteManualEntry } from './trackingRepository';
+import { exportWorkspace,exportWorkspaceJson,getWorkspaceMeta,importWorkspace,parseWorkspace } from './workspaceRepository';
+
+beforeEach(async()=>{await db.notes.clear();await db.trackingSessions.clear();await db.noteRevisions.clear();await db.tombstones.clear();await db.workspaceMeta.clear()});
+describe('versioned workspace backup',()=>{
+ it('creates stable workspace identity and a distinct device id',async()=>{const first=await getWorkspaceMeta(),second=await getWorkspaceMeta();expect(first.workspaceId).toBe(second.workspaceId);expect(first.deviceId).toBe(second.deviceId);expect(first.workspaceId).not.toBe(first.deviceId)});
+ it('exports every persistent workspace entity as versioned JSON',async()=>{const note=newNote({title:'Export'});await db.notes.add(note);const session=await addManualEntry(note.id,60_000);await createRevision(note,'content');await permanentlyDeleteNote(note.id);const backup=await exportWorkspace();expect(backup).toMatchObject({format:'noma-workspace',schemaVersion:1});expect(backup.data.notes).toHaveLength(0);expect(backup.data.trackingSessions[0].id).toBe(session.id);expect(backup.data.noteRevisions).toHaveLength(0);expect(backup.data.tombstones[0]).toMatchObject({entityType:'note',entityId:note.id});expect(JSON.parse(await exportWorkspaceJson()).workspaceId).toBe(backup.workspaceId)});
+ it('imports a backup atomically while retaining this installation device id',async()=>{const local=await getWorkspaceMeta();const sourceNote=newNote({title:'Restored'});const backup={format:'noma-workspace',schemaVersion:1,workspaceId:'source-workspace',exportedAt:1,appVersion:'0.8.0',data:{notes:[sourceNote],trackingSessions:[],noteRevisions:[],tombstones:[]}} as const;await db.notes.add(newNote({title:'Old local'}));const result=await importWorkspace(backup);expect(result).toMatchObject({notes:1,workspaceId:'source-workspace'});expect((await db.notes.toArray()).map(note=>note.title)).toEqual(['Restored']);const meta=await getWorkspaceMeta();expect(meta.workspaceId).toBe('source-workspace');expect(meta.deviceId).toBe(local.deviceId)});
+ it('rejects invalid or incompatible backup files before replacing data',async()=>{const note=newNote({title:'Keep'});await db.notes.add(note);expect(()=>parseWorkspace('{broken')).toThrow();expect(()=>parseWorkspace({format:'noma-workspace',schemaVersion:99,workspaceId:'x',data:{notes:[],trackingSessions:[],noteRevisions:[],tombstones:[]}})).toThrow();expect((await db.notes.get(note.id))?.title).toBe('Keep')});
+ it('writes persistent tombstones for permanent Note and manual-entry deletion',async()=>{const note=newNote();await db.notes.add(note);const session=await addManualEntry(note.id,60_000);await deleteManualEntry(session.id);await permanentlyDeleteNote(note.id);const tombstones=await db.tombstones.toArray();expect(tombstones).toEqual(expect.arrayContaining([expect.objectContaining({entityType:'note',entityId:note.id}),expect.objectContaining({entityType:'trackingSession',entityId:session.id})]))});
+});

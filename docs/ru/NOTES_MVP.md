@@ -12,3 +12,7 @@ Noma хранит заметки локально в IndexedDB через Dexie.
 ## История версий заметок (MVP 0.7)
 
 Noma хранит persistent snapshots перед значимым изменением Note или Project: title, content, color, Today/Inbox, расположение в дереве, учёт времени, настройку Pomodoro и поля цели. Повторные autosave объединяются в окно редактирования три минуты; для одной Note остаются последние 100 версий. В History можно посмотреть старую версию, восстановить всю Note или вернуть только title и content. Version Restore сохраняет тот же id и tracking sessions; если старый parent больше недоступен или создаёт цикл, остаётся текущий безопасный parent. Restore из Trash/Archive — отдельное lifecycle-восстановление, а не откат версии.
+
+## Резервная копия рабочего пространства (MVP 0.8)
+
+Локальное рабочее пространство можно экспортировать и восстановить как versioned JSON: заметки, tracking sessions, revisions и tombstones, а также workspace/device identity. Планируемое место на Drive — видимая пользовательская папка `Google Drive / Noma/`; `appDataFolder` не используется. Загрузка в Drive недоступна до настройки OAuth credentials.

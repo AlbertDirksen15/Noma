@@ -1,6 +1,7 @@
 import { db, newNote, type Note } from './data';
 import { stopActiveForSubtree } from './trackingRepository';
 import { updateNoteFields } from './noteUpdateService';
+import { createTombstone } from './workspaceRepository';
 export const getChildren=(parentId:string|null)=>db.notes.where('parentId').equals(parentId as string).toArray();
 export const getAncestors=async(id:string)=>{const out:Note[]=[];let n=await db.notes.get(id);while(n?.parentId){n=await db.notes.get(n.parentId);if(n)out.unshift(n)}return out};
 export const getDescendants=async(id:string)=>{const all=await db.notes.toArray(),out:Note[]=[];const walk=(parent:string)=>{for(const n of all.filter(x=>x.parentId===parent)){out.push(n);walk(n.id)}};walk(id);return out};
@@ -10,4 +11,4 @@ export const createChildNote=async(parentId:string|null)=>{const note=newNote({p
 export const createChildProject=async(parentId:string|null)=>{const note=newNote({parentId,isProject:true});await db.notes.put(note);return note.id};
 export const createProject=async(title:string, parentId:string|null=null)=>{const note=newNote({title:title.trim(),parentId,isProject:true});await db.notes.put(note);const saved=await db.notes.get(note.id);if(!saved)throw new Error('Проект не был подтверждён в IndexedDB');return saved};
 export const updateSubtree=(id:string,field:'archivedAt'|'deletedAt',value:number|null)=>getDescendants(id).then(async nodes=>{const root=await db.notes.get(id);const all=[root,...nodes].filter(Boolean) as Note[];if(value!==null)await stopActiveForSubtree(all.map(n=>n.id));for(const n of all)await db.notes.put({...n,[field]:value,updatedAt:Date.now()})});
-export const permanentlyDeleteSubtree=async(id:string)=>{const root=await db.notes.get(id);if(!root)return;const ids=[root,...await getDescendants(id)].map(note=>note.id);await db.transaction('rw',db.notes,db.noteRevisions,async()=>{await db.noteRevisions.where('noteId').anyOf(ids).delete();await db.notes.bulkDelete(ids)})};
+export const permanentlyDeleteSubtree=async(id:string)=>{const root=await db.notes.get(id);if(!root)return;const ids=[root,...await getDescendants(id)].map(note=>note.id);await db.transaction('rw',db.notes,db.noteRevisions,db.tombstones,async()=>{for(const noteId of ids)await createTombstone('note',noteId);await db.noteRevisions.where('noteId').anyOf(ids).delete();await db.notes.bulkDelete(ids)})};

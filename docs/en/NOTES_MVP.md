@@ -11,3 +11,7 @@ Goals use persistent target hours and a fixed local calendar deadline. Pace is r
 ## Note Version History (MVP 0.7)
 
 Noma keeps persistent snapshots before meaningful Note or Project changes: title, content, color, Today/Inbox, parent location, tracking capability, Pomodoro setting and goal fields. Repeated autosaves share a three-minute edit window, and the latest 100 revisions per Note are retained. History previews a revision and can either restore the complete Note state or copy only its title and content. Version Restore keeps the same Note id and tracking sessions; if the historical parent is unavailable or unsafe, the current safe parent is retained. Trash/Archive Restore is separate lifecycle recovery, not version restoration.
+
+## Workspace Backup (MVP 0.8)
+
+The local workspace can be exported and restored as a versioned JSON file containing Notes, tracking sessions, revisions and tombstones, together with workspace/device identity. The planned Drive destination is the visible user-owned `Google Drive / Noma/` folder; `appDataFolder` is not used. Drive upload remains unavailable until OAuth credentials are configured.

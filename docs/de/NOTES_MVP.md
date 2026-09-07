@@ -12,3 +12,7 @@ Ziele speichern Zielstunden und ein fixes lokales Kalenderdatum. Das tägliche T
 ## Notizversionsverlauf (MVP 0.7)
 
 Noma speichert dauerhafte Snapshots vor bedeutenden Änderungen an Notizen oder Projekten: Titel, Inhalt, Farbe, Today/Inbox, Position im Baum, Zeiterfassung, Pomodoro-Einstellung und Zielfelder. Wiederholte Autosaves werden in einem dreiminütigen Bearbeitungsfenster zusammengefasst; pro Notiz bleiben die neuesten 100 Versionen erhalten. Im Verlauf lassen sich alte Versionen ansehen, vollständig wiederherstellen oder nur Titel und Inhalt übernehmen. Version Restore behält dieselbe Note-ID und Tracking-Sessions; ist der historische Parent nicht verfügbar oder unsicher, bleibt der aktuelle sichere Parent erhalten. Wiederherstellung aus Papierkorb/Archiv ist davon getrennte Lifecycle-Wiederherstellung.
+
+## Workspace-Backup (MVP 0.8)
+
+Der lokale Workspace kann als versionierte JSON-Datei exportiert und wiederhergestellt werden: Notizen, Tracking-Sessions, Revisionen, Tombstones sowie Workspace-/Geräteidentität. Das geplante Drive-Ziel ist der sichtbare Benutzerordner `Google Drive / Noma/`; `appDataFolder` wird nicht verwendet. Der Drive-Upload bleibt bis zur Konfiguration von OAuth-Anmeldedaten deaktiviert.
