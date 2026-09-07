@@ -12,7 +12,7 @@ Noma is a local-first application for notes, projects, planning and time trackin
 
 ## Roadmap
 
-0.1 notes and persistence; 0.2 today/inbox/archive/trash; 0.3 nested notes/projects (completed); 0.4 time tracking (implementation complete; manual verification partial due browser tool limitation); 0.5 targets/deadlines; 0.6 Pomodoro; 0.7 history; 0.8 Google Drive prototype; 1.0 Windows launcher.
+0.1 notes and persistence; 0.2 today/inbox/archive/trash; 0.3 nested notes/projects (completed); 0.4 time tracking (implementation complete; manual verification partial due browser tool limitation); 0.5 targets/deadlines and plan-vs-actual (in progress); 0.6 Pomodoro; 0.7 history; 0.8 Google Drive prototype; 1.0 Windows launcher.
 
 ## Later platforms
 

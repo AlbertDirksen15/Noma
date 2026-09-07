@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0-pre
+
+- Added migrated goal fields for Notes and Projects.
+- Added dynamic pace, baseline, forecast and plan-vs-actual calculation services.
+- Added goal controls and a lightweight SVG plan-vs-actual view.
+
 ## 0.4.0
 
 - Added optional persistent time tracking for Notes and Projects.
