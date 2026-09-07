@@ -98,8 +98,9 @@ Noma is a local-first personal productivity app built around universal notes. It
 
 ## Current Git status
 
-- Branch: `develop`.
-- Latest commit at the time of this memory: update this line after the next commit.
+- Branch: `feature/desktop-launcher`.
+- Latest committed launcher/docs checkpoint: `5024f3e`.
+- Package version: `0.9.0-local.0`.
 - Release tag: `v0.8.0-local` on `f6b5e9f`.
 - Release checkpoint exists.
 - Remote `origin` is not configured.
