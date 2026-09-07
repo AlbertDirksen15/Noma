@@ -6,3 +6,5 @@ Implementiert: Projektrouten, Breadcrumbs, untergeordnete Notizen/Projekte, dire
 # Time Tracking (MVP 0.4)
 
 Zeitmessung ist eine optionale Fähigkeit jeder Notiz und jedes Projekts. Sitzungen werden in IndexedDB gespeichert und unterstützen Start/Pause/Resume/Stop, manuelle Einträge, Summen und Verlauf. Global läuft nur ein Timer.
+
+Ziele verwenden ein fixes lokales Kalenderdatum. Das tägliche Tempo wird aus Reststunden und Kalendertagen berechnet; der Zielbereich zeigt Baseline, Ist-Fortschritt, Vorsprung/Rückstand, Prognose und ein einfaches Diagramm.
