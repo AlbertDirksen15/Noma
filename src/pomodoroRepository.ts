@@ -1,5 +1,6 @@
 import { db } from './data';
 import { createPomodoro, startPomodoro } from './pomodoro';
+import { updateNoteFields } from './noteUpdateService';
 
 // A completed Pomodoro is only a rhythm signal. It never changes the tracking session.
 export async function reconcilePomodoro(now = Date.now()) {
@@ -29,8 +30,8 @@ export async function startNewPomodoroCycle(sessionId: string, now = Date.now())
 export async function configurePomodoro(noteId: string, minutes: number, now = Date.now()) {
   if (!Number.isFinite(minutes) || minutes < 1 || minutes > 1440) throw new Error('Укажите от 1 до 1440 минут');
   await reconcilePomodoro(now);
-  await db.transaction('rw', db.notes, db.trackingSessions, async () => {
-    await db.notes.update(noteId, { pomodoroMinutes: minutes });
+  await updateNoteFields(noteId,{ pomodoroMinutes: minutes });
+  await db.transaction('rw', db.trackingSessions, async () => {
     const sessions = await db.trackingSessions.where('noteId').equals(noteId).toArray();
     for (const session of sessions) {
       if (session.status === 'completed') continue;
