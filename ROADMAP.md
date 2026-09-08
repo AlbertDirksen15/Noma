@@ -7,15 +7,14 @@
 ## 1. CURRENT STATE
 
 - Development branch: `feature/desktop-launcher`.
-- Current HEAD: `050f818` (`chore: update gitignore`).
+- Latest implementation checkpoint: `c956aa7` (`feat: complete Windows desktop launcher`).
 - Remote: `origin` is `https://github.com/AlbertDirksen15/Noma.git`.
-- At this documentation checkpoint, local and remote `feature/desktop-launcher` both point to `050f818` (`+0/-0`).
-- Documentation updates are uncommitted pending user review.
+- The implementation checkpoint is local on `feature/desktop-launcher`; it has not been pushed to `origin`.
 - Product version: Noma 1.0 Beta, `1.0.0-beta.0` in `package.json`.
-- Version inconsistencies remain: `package-lock.json` says `0.9.0-local.0`, and workspace backup metadata says `appVersion: 0.8.0`.
-- The repository contains 134 test scenarios. They were not run during this documentation update, so their current passing status is unknown.
+- `package-lock.json` and workspace backup exports now use the package version through the shared application-version module.
+- The repository contains 134 test scenarios. Launcher/version checks have passed; final end-to-end smoke verification remains.
 - The basic `Noma.exe` and bundled `runtime/node.exe` already exist. The destination computer does not require a separate Node.js installation.
-- The finished tray-based Windows launcher is still in progress.
+- The tray-based Windows launcher is implemented; final smoke verification and portable refresh remain.
 - Development continues from source and the dev version. Portable output is created only after the explicit command “собери релиз”.
 - The single official portable output is `release/Noma-portable` inside the Noma source repository. `outputs/Noma-portable` was a temporary fallback created when the official portable folder was locked and is not a second release location. If the official folder is locked, stop the running Noma instance before continuing; do not create another output path.
 
@@ -113,35 +112,28 @@
 
 ## 3. IN PROGRESS
 
-### Complete the desktop launcher
+### Verify and refresh the desktop launcher
 
-The current EXE is a basic console-style launcher for the bundled Node runtime. Finish the intended Windows experience:
+The launcher implementation is complete in source. Finish verification and refresh the one official portable folder:
 
-1. Pass a shutdown token and runtime-state-file path from `NomaLauncher.cs` to the local server.
-2. Start Noma without a visible console window.
-3. Add a system-tray icon with Open Noma and Exit actions.
-4. Reuse or focus an already-running instance when Noma is launched again.
-5. Shut down the local server cleanly from the tray.
-6. Show understandable Windows dialogs for missing or damaged portable files.
-7. Verify this as one logical block before creating another portable release.
+1. Run the final full check once after documentation changes.
+2. Perform safe manual smoke checks for first launch, tray actions, repeat launch and Exit.
+3. Refresh only `release/Noma-portable` after confirming no old Noma process is locking it.
 
 ### Resolve current consistency gaps
 
-- Align `package-lock.json` with version `1.0.0-beta.0`.
-- Replace backup `appVersion: 0.8.0` with a single current version source.
-- Separate current portable instructions from historical Node-required notes in all documentation.
-- Run the 134 existing test scenarios only after the launcher block is ready; no current pass claim is recorded.
+- Package and backup version metadata use `1.0.0-beta.0` from the package manifest.
+- Current portable instructions are separated from historical Node-required notes in the documentation.
+- The 134 existing test scenarios have targeted coverage; the final full run is performed once at the end of this block.
 
 ## 4. NEXT
 
-After the desktop launcher is complete:
+After desktop launcher verification is complete:
 
-1. Run focused server and launcher checks, followed by one consolidated typecheck, test and production-build verification.
-2. Correct package-lock and backup-version metadata.
-3. Perform a focused manual pass through notes, projects, nesting, daily planning, deadline warnings, media, protection, history, Trash and Backup/Restore.
-4. Update `README.md`, `NOMA_SPEC.md`, `CHANGELOG.md` and `RELEASE_NOTES.md` with one consistent current-state section and clearly separated historical notes.
-5. Create a logical commit in feature/desktop-launcher. Push only when the user explicitly requests it or when creating a deliberate remote checkpoint. Do not build a portable release without a separate request.
-6. Start MVP 1.1 by specifying plugin manifests, versioned hooks, permissions, lifecycle, UI slots and backup metadata before implementing plugin loading.
+1. Run the final full check once and complete focused launcher/server smoke verification.
+2. Refresh only `release/Noma-portable` and confirm `Noma.exe`, `runtime/node.exe`, `server`, `dist` and launcher files.
+3. Create a logical commit in feature/desktop-launcher. Push only when the user explicitly requests it or when creating a deliberate remote checkpoint.
+4. Start MVP 1.1 by specifying plugin manifests, versioned hooks, permissions, lifecycle, UI slots and backup metadata before implementing plugin loading.
 
 ## 5. FUTURE ROADMAP
 
