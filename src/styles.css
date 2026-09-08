@@ -44,3 +44,5 @@ main.content{display:block;max-width:1100px;margin:0 auto;width:100%;min-height:
 
 /* Compact modern creation actions */
 aside>.new,.project-sidebar>.new,.project-actions>.new{height:38px;padding:8px 13px;border-radius:10px;font-size:13px;box-shadow:0 3px 10px #3c5bdc20}.project-create,.project-actions>button:not(.new){height:38px;padding:8px 13px;border-radius:10px;font-size:13px;background:var(--noma-surface);border:1px solid var(--noma-border);display:inline-flex;align-items:center;gap:8px;color:var(--noma-text);box-shadow:0 2px 8px #282a3510}.project-create:hover,.project-actions>button:not(.new):hover{background:var(--noma-highlight);transform:translateY(-1px)}aside>.new svg,.project-sidebar>.new svg,.project-actions>.new svg{width:16px;height:16px}
+
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}.header-actions .new,.header-actions .project-create{height:34px;padding:7px 10px;font-size:12px;white-space:nowrap}.header-actions .new{box-shadow:0 2px 8px #3c5bdc20}.header-actions .project-create{margin:0}@media(max-width:900px){.header-actions{display:none}}
