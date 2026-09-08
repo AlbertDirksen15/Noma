@@ -1,5 +1,5 @@
 import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { createServer, get } from 'node:http';
+import { createServer, get, request as httpRequest } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -15,6 +15,15 @@ const request = (url: string) => new Promise<{ status: number; body: string }>((
     response.on('data', (chunk) => { body += chunk; });
     response.on('end', () => resolve({ status: response.statusCode ?? 0, body }));
   }).on('error', reject);
+});
+
+const post = (url: string) => new Promise<number>((resolve, reject) => {
+  const request = httpRequest(url, { method: 'POST' }, (response) => {
+    response.resume();
+    response.on('end', () => resolve(response.statusCode ?? 0));
+  });
+  request.on('error', reject);
+  request.end();
 });
 
 afterEach(() => {
@@ -74,6 +83,21 @@ describe('desktop local server', () => {
     const address = other.address();
     expect(address).not.toBeNull();
     expect(await isNomaDesktopServer((address as { port: number }).port)).toBe(false);
+  });
+
+  it('only accepts an authenticated local shutdown request', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'noma-desktop-'));
+    temporaryDirectories.push(directory);
+    writeFileSync(join(directory, 'index.html'), 'Noma');
+    let stopped = 0;
+    const started = await startDesktopServer({ distDir: directory, port: 0, shutdownToken: 'secret', onShutdown: () => { stopped += 1; } });
+    runningServers.push(started.server);
+
+    expect(await post(`http://127.0.0.1:${started.port}/__noma_shutdown?token=wrong`)).toBe(403);
+    expect(stopped).toBe(0);
+    expect(await post(`http://127.0.0.1:${started.port}/__noma_shutdown?token=secret`)).toBe(204);
+    await new Promise((resolveStop) => setImmediate(resolveStop));
+    expect(stopped).toBe(1);
   });
 
   it('selects the next localhost port when the default is occupied', async () => {

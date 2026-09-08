@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer, get } from 'node:http';
 import { resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -32,7 +32,7 @@ const sendFile = (response, filePath) => {
   response.end(readFileSync(filePath));
 };
 
-export const createDesktopServer = (distDir) => createServer((request, response) => {
+export const createDesktopServer = (distDir, { shutdownToken, onShutdown } = {}) => createServer((request, response) => {
   try {
     const pathname = decodeURIComponent((request.url ?? '/').split('?')[0]);
     if (!pathname.startsWith('/') || pathname.includes('\0')) {
@@ -41,6 +41,15 @@ export const createDesktopServer = (distDir) => createServer((request, response)
     if (pathname === '/__noma_health') {
       response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       response.end('{"app":"noma-desktop"}');
+      return;
+    }
+    if (pathname === '/__noma_shutdown') {
+      const token = new URL(request.url ?? '/', `http://${DESKTOP_HOST}`).searchParams.get('token');
+      if (request.method !== 'POST' || !shutdownToken || token !== shutdownToken || !onShutdown) {
+        response.writeHead(403); response.end('Forbidden'); return;
+      }
+      response.writeHead(204); response.end();
+      setImmediate(onShutdown);
       return;
     }
     const candidate = safePath(distDir, pathname);
@@ -75,12 +84,12 @@ export const createDesktopServer = (distDir) => createServer((request, response)
   }
 });
 
-export const startDesktopServer = ({ distDir = resolve(process.cwd(), 'dist'), port = DEFAULT_DESKTOP_PORT } = {}) => new Promise((resolveServer, reject) => {
+export const startDesktopServer = ({ distDir = resolve(process.cwd(), 'dist'), port = DEFAULT_DESKTOP_PORT, shutdownToken, onShutdown } = {}) => new Promise((resolveServer, reject) => {
   if (!Number.isInteger(port) || port < 0 || port > 65535) {
     reject(new Error('Port must be an integer between 0 and 65535.')); return;
   }
   const tryPort = (candidate) => {
-    const server = createDesktopServer(distDir);
+    const server = createDesktopServer(distDir, { shutdownToken, onShutdown });
     server.once('error', (error) => {
       if (error.code === 'EADDRINUSE' || error.code === 'EACCES') {
         tryPort(candidate === 65535 ? 0 : candidate + 1);
@@ -135,8 +144,12 @@ const isMain = process.argv[1] && pathToFileURL(resolve(process.argv[1])).href =
 if (isMain) {
   const portArg = process.argv.find((argument) => argument.startsWith('--port='));
   const distArg = process.argv.find((argument) => argument.startsWith('--dist='));
+  const runtimeFileArg = process.argv.find((argument) => argument.startsWith('--runtime-file='));
+  const shutdownTokenArg = process.argv.find((argument) => argument.startsWith('--shutdown-token='));
   const port = portArg ? Number(portArg.slice('--port='.length)) : Number(process.env.NOMA_PORT ?? DEFAULT_DESKTOP_PORT);
   const distDir = distArg ? resolve(distArg.slice('--dist='.length)) : resolve(process.cwd(), 'dist');
+  const runtimeFile = runtimeFileArg ? resolve(runtimeFileArg.slice('--runtime-file='.length)) : undefined;
+  const shutdownToken = shutdownTokenArg?.slice('--shutdown-token='.length);
   const shouldOpen = process.argv.includes('--open');
   const run = async () => {
     ensureDist(distDir);
@@ -146,19 +159,22 @@ if (isMain) {
       openBrowser(url);
       return;
     }
-    const { server, port: actualPort } = await startDesktopServer({ distDir, port });
     let stopping = false;
     const stop = () => {
       if (stopping) return;
       stopping = true;
       console.log('Stopping Noma desktop server...');
-      shutdownDesktopServer(server).catch((error) => { console.error(error); process.exitCode = 1; });
+      shutdownDesktopServer(server).catch((error) => { console.error(error); process.exitCode = 1; }).finally(() => {
+        if (runtimeFile) rmSync(runtimeFile, { force: true });
+      });
     };
+    const { server, port: actualPort } = await startDesktopServer({ distDir, port, shutdownToken, onShutdown: stop });
     process.once('SIGINT', stop);
     process.once('SIGTERM', stop);
     process.once('SIGBREAK', stop);
     console.log('Press Ctrl+C to stop Noma. Closing the browser does not stop the server.');
     const url = `http://${DESKTOP_HOST}:${actualPort}`;
+    if (runtimeFile) writeFileSync(runtimeFile, JSON.stringify({ port: actualPort }), 'utf8');
     console.log(`Noma desktop mode listening on ${url}`);
     if (actualPort !== port) console.log(`Port ${port} was busy; selected ${actualPort}`);
     if (shouldOpen) openBrowser(url);
