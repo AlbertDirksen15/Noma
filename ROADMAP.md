@@ -12,9 +12,9 @@
 - The implementation checkpoint is local on `feature/desktop-launcher`; it has not been pushed to `origin`.
 - Product version: Noma 1.0 Beta, `1.0.0-beta.0` in `package.json`.
 - `package-lock.json` and workspace backup exports now use the package version through the shared application-version module.
-- The repository contains 134 test scenarios. Launcher/version checks have passed; final end-to-end smoke verification remains.
+- The repository contains 134 test scenarios. The final lint, typecheck, test (134/134) and production build checks pass. Process launch, hidden GUI subsystem, one-server reuse and shutdown were checked; direct tray-menu interaction remains a desktop-session check.
 - The basic `Noma.exe` and bundled `runtime/node.exe` already exist. The destination computer does not require a separate Node.js installation.
-- The tray-based Windows launcher is implemented; final smoke verification and portable refresh remain.
+- The tray-based Windows launcher is implemented and the official portable folder has been refreshed. A native tray smoke pass remains useful from a normal desktop session.
 - Development continues from source and the dev version. Portable output is created only after the explicit command “собери релиз”.
 - The single official portable output is `release/Noma-portable` inside the Noma source repository. `outputs/Noma-portable` was a temporary fallback created when the official portable folder was locked and is not a second release location. If the official folder is locked, stop the running Noma instance before continuing; do not create another output path.
 
@@ -112,28 +112,27 @@
 
 ## 3. IN PROGRESS
 
-### Verify and refresh the desktop launcher
+### Native desktop smoke follow-up
 
-The launcher implementation is complete in source. Finish verification and refresh the one official portable folder:
+The launcher implementation is complete in source and the one official portable folder is refreshed. Complete the remaining interactive checks from a normal Windows desktop session:
 
-1. Run the final full check once after documentation changes.
-2. Perform safe manual smoke checks for first launch, tray actions, repeat launch and Exit.
-3. Refresh only `release/Noma-portable` after confirming no old Noma process is locking it.
+1. Launch `release/Noma-portable/Noma.exe`.
+2. Verify tray Open/Exit and repeat-launch reuse.
+3. Confirm shutdown removes the runtime-state file.
 
 ### Resolve current consistency gaps
 
 - Package and backup version metadata use `1.0.0-beta.0` from the package manifest.
 - Current portable instructions are separated from historical Node-required notes in the documentation.
-- The 134 existing test scenarios have targeted coverage; the final full run is performed once at the end of this block.
+- The 134 existing test scenarios pass in the completed full run.
 
 ## 4. NEXT
 
 After desktop launcher verification is complete:
 
-1. Run the final full check once and complete focused launcher/server smoke verification.
-2. Refresh only `release/Noma-portable` and confirm `Noma.exe`, `runtime/node.exe`, `server`, `dist` and launcher files.
-3. Create a logical commit in feature/desktop-launcher. Push only when the user explicitly requests it or when creating a deliberate remote checkpoint.
-4. Start MVP 1.1 by specifying plugin manifests, versioned hooks, permissions, lifecycle, UI slots and backup metadata before implementing plugin loading.
+1. Complete the native tray smoke pass from a normal Windows desktop session.
+2. Keep `release/Noma-portable` as the only portable output and stop Noma before any future refresh.
+3. Start MVP 1.1 by specifying plugin manifests, versioned hooks, permissions, lifecycle, UI slots and backup metadata before implementing plugin loading.
 
 ## 5. FUTURE ROADMAP
 
