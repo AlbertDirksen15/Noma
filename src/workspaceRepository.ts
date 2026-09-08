@@ -1,4 +1,5 @@
 import { db, type Note, type NoteRevision, type Tombstone, type TrackingSession, type WorkspaceMeta } from './data';
+import { APP_VERSION } from './appVersion';
 
 export const WORKSPACE_SCHEMA_VERSION=1;
 export type WorkspaceBackup={format:'noma-workspace';schemaVersion:number;workspaceId:string;exportedAt:number;appVersion:string;data:{notes:Note[];trackingSessions:TrackingSession[];noteRevisions:NoteRevision[];tombstones:Tombstone[]}};
@@ -6,7 +7,7 @@ const isObject=(value:unknown):value is Record<string,unknown>=>typeof value==='
 const identity=()=>crypto.randomUUID();
 export const getWorkspaceMeta=async():Promise<WorkspaceMeta>=>{const existing=await db.workspaceMeta.get('workspace');if(existing)return existing;const now=Date.now(),meta:WorkspaceMeta={id:'workspace',workspaceId:identity(),deviceId:identity(),schemaVersion:WORKSPACE_SCHEMA_VERSION,createdAt:now,updatedAt:now};await db.workspaceMeta.put(meta);return meta};
 export const createTombstone=async(entityType:Tombstone['entityType'],entityId:string,deletedAt=Date.now())=>{const tombstone:Tombstone={id:`${entityType}:${entityId}`,entityType,entityId,deletedAt};await db.tombstones.put(tombstone);return tombstone};
-export const exportWorkspace=async():Promise<WorkspaceBackup>=>{const meta=await getWorkspaceMeta();const [notes,trackingSessions,noteRevisions,tombstones]=await Promise.all([db.notes.toArray(),db.trackingSessions.toArray(),db.noteRevisions.toArray(),db.tombstones.toArray()]);return {format:'noma-workspace',schemaVersion:WORKSPACE_SCHEMA_VERSION,workspaceId:meta.workspaceId,exportedAt:Date.now(),appVersion:'0.8.0',data:{notes,trackingSessions,noteRevisions,tombstones}}};
+export const exportWorkspace=async():Promise<WorkspaceBackup>=>{const meta=await getWorkspaceMeta();const [notes,trackingSessions,noteRevisions,tombstones]=await Promise.all([db.notes.toArray(),db.trackingSessions.toArray(),db.noteRevisions.toArray(),db.tombstones.toArray()]);return {format:'noma-workspace',schemaVersion:WORKSPACE_SCHEMA_VERSION,workspaceId:meta.workspaceId,exportedAt:Date.now(),appVersion:APP_VERSION,data:{notes,trackingSessions,noteRevisions,tombstones}}};
 export const exportWorkspaceJson=async()=>JSON.stringify(await exportWorkspace(),null,2);
 const validArray=(value:unknown)=>Array.isArray(value)&&value.every(isObject);
 export const parseWorkspace=(input:string|unknown):WorkspaceBackup=>{

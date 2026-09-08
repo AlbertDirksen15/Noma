@@ -12,7 +12,7 @@ export const buildWindowsLauncher = (root, target, compiler = cscPath()) => {
   if (!existsSync(source)) throw new Error(`Native launcher source is missing: ${source}`);
   if (!existsSync(compiler)) throw new Error(`Windows C# compiler is missing: ${compiler}`);
   try {
-    execFileSync(compiler, ['/nologo', '/target:exe', `/out:${resolve(target, 'Noma.exe')}`, source], { stdio: 'pipe' });
+    execFileSync(compiler, ['/nologo', '/target:winexe', '/r:System.Windows.Forms.dll', '/r:System.Drawing.dll', `/out:${resolve(target, 'Noma.exe')}`, source], { stdio: 'pipe' });
   } catch (error) {
     throw new Error(`Could not build Noma.exe: ${error instanceof Error ? error.message : error}`);
   }
