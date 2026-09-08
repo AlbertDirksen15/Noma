@@ -21,3 +21,6 @@ Note protection is owned by src/protection/noteProtection.ts. All editable note 
 
 
 Photos are a core content module under src/photos. PhotoRepository owns the data shape, validation, soft-delete and purge rules; Photos.tsx owns previews, viewer and trash UI. Future media plugins should use the same content and deletion contracts rather than writing blobs directly into arbitrary plugin tables.
+
+
+The parentId tree is shared by notes and projects; nested notes do not require a separate content type. Breadcrumbs resolve each parent by its isProject flag. Goal aggregation traverses the same tree, so future plugins can contribute child content while core retains ownership of traversal, tracking and deadline calculations.

@@ -190,3 +190,12 @@ Validation: 105/105 tests pass, including photo trash restore/purge, encrypted p
 ## 2026-09-08 — Project versus note clarity
 
 The UI now explains the distinction everywhere it matters: a note is labelled “Заметка · запись” and a project “Проект · папка”. Project pages include an explainer that projects contain notes and subprojects, plus a “Содержимое проекта” section with its item count. Children are labelled “Заметка” or “Подпроект”. The data model remains compatible: both are Note records and isProject controls the container behavior, preserving the future plugin/content-block boundary.
+
+
+## 2026-09-08 — Nested notes and tree-wide goals
+
+Any note can now contain notes and subprojects. Note pages show breadcrumbs for mixed parent chains and a “Вложенные записи” section with quick links and actions for a child note or subproject. Project breadcrumbs also navigate correctly when a parent is a note.
+
+Goals aggregate tracking sessions across the full descendant tree (notes and projects). The goal panel shows hours already tracked inside the tree, remaining hours and required hours per day when a date is selected. The pace is never capped at 24 hours; values such as 29.7 h/day are shown directly. Goal baseline creation includes existing descendant sessions.
+
+Validation: 107/107 tests pass, lint/typecheck/build pass. New tests cover notes inside notes, mixed breadcrumbs, nested goal baselines and over-24-hour pace behavior.

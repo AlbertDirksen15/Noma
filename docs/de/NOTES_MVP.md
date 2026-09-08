@@ -64,3 +64,8 @@ Mehrere Fotos können über das kompakte Bildsymbol eingefügt werden. Vorschaue
 ## Projekt und Notiz — 08.09.2026
 
 Die Oberfläche kennzeichnet Notizen als eigenständige Aufzeichnung und Projekte als Ordner für Notizen und Unterprojekte. Projektseiten zeigen den Bereich „Projektinhalt“ mit der Elementanzahl.
+
+
+## Verschachtelte Notizen und Baumziele — 08.09.2026
+
+Notizen können weitere Notizen enthalten. Breadcrumbs verlinken gemischte Elternketten. Ziele summieren Zeit aus dem gesamten Unterbaum; die erforderliche Tagesrate wird nach Datumswahl ohne 24-Stunden-Limit angezeigt.
