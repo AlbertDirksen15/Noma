@@ -34,7 +34,7 @@ main.content{display:block;max-width:1100px;margin:0 auto;width:100%;min-height:
 .workspace-time{display:flex;align-items:center;gap:14px;color:#888;font-size:11px;white-space:nowrap}.workspace-time b{color:var(--noma-text);font-weight:650}.note-time-badge{display:inline-flex;align-items:center;margin-left:8px;padding:2px 6px;border-radius:999px;background:#ffffff72;color:#686879;font-size:10px;font-weight:600;white-space:nowrap;vertical-align:middle}.note-time-badge::first-letter{color:var(--noma-accent)}
 @media(max-width:700px){.workspace-time{display:none}}
 
-.goal-draft-note{color:#8b8c94;font-size:11px;align-self:center}
+.goal-draft-note,.goal-date-help{color:#8b8c94;font-size:11px;align-self:center}.goal-date-help{display:block;margin-top:7px}
 
 .project-shell{display:flex;min-height:100vh;background:var(--noma-canvas)}.project-sidebar{width:240px;padding:28px 18px;background:var(--noma-surface);flex-shrink:0}.project-sidebar nav{margin-top:24px}.project-sidebar .new{width:100%;font-size:14px}.project-card{position:relative;margin-top:8px}.project-card::before{content:'';position:absolute;left:20px;top:-9px;width:42px;height:10px;border:1.5px solid currentColor;border-bottom:0;border-radius:6px 6px 0 0;opacity:.95;background:currentColor}.project-card .card-kind{padding-top:2px}.project-sidebar .nav{width:100%}@media(max-width:700px){.project-sidebar{width:64px;padding:20px 8px}.project-sidebar .new{font-size:0;padding:11px}.project-sidebar .nav{font-size:0;justify-content:center;padding:12px}}
 
