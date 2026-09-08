@@ -34,3 +34,8 @@ Erstellen: `npm run build:portable`. Den gesamten Ordner `release/Noma-portable`
 Start mit Noma.cmd; der Browser öffnet sich automatisch. Der Server bindet nur an 127.0.0.1:3847 und versucht bei Belegung den nächsten Port. NOMA_PORT überschreibt den Startport. Mit Strg+C im Terminal beenden; das Schließen des Browsers beendet den Server nicht. Noma.ps1 unterliegt der PowerShell-Ausführungsrichtlinie. Vor erneutem Erstellen den Server beenden.
 
 Daten liegen in IndexedDB im Browserprofil, nicht im Portable-Ordner. Ein anderer Port oder ein anderes Profil kann leer erscheinen. Zum ursprünglichen Port zurückkehren oder Workspace Export/Import verwenden. Vor einem Computerwechsel Daten exportieren. Prüfungen: lint, typecheck, test, build, build:portable.
+
+
+## 2026-09-08
+
+Notizen werden bei Änderungen automatisch gespeichert. Karten lassen sich anheften und innerhalb ihrer Gruppe per Ziehen sortieren. Heute enthält zwei angeheftete Standardnotizen. Zeitziele benötigen kein Datum. Das Einklappen pausiert den Timer; Zurücksetzen erhält die erfasste Zeit. Projekte werden über die Seitenleiste erstellt. Theme-Variablen und Core-Dienste bereiten die spätere Trennung von Plugins und Themes vor; siehe ../EXTENSIBILITY.md.

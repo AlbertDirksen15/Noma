@@ -1,0 +1,20 @@
+/* Themes override these semantic tokens; persistence and commands stay in core. */
+:root{
+  --noma-canvas: #fff8df;
+  --noma-surface: #fffdf4;
+  --noma-text: #282a35;
+  --noma-accent: #3c5bdc;
+  --noma-border: #eee3bf;
+  --noma-highlight: #ffefad;
+  --noma-selected: #feefc3;
+  --noma-running: #388c58;
+  --noma-paused: #c84a49;
+  --noma-note-green: #e3f4e1;
+  --noma-note-yellow: #fff5c9;
+  --noma-note-blue: #e2f0fb;
+  --noma-note-pink: #fce5eb;
+  --noma-note-purple: #eee8fb;
+  --noma-note-gray: #ececec;
+  --noma-card-radius:15px;
+  --noma-font:'DM Sans',system-ui,sans-serif;
+}
