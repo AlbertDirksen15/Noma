@@ -1,4 +1,4 @@
-import {useTimePlan,NoteTimeBadge} from './TimeSummary';
+import {useTimePlan,NoteTimeBadge,formatDailyHours} from './TimeSummary';
 import {getDescendants} from './treeRepository';
 import { useEffect, useState } from 'react';
 import './pomodoro-circle.css';
@@ -33,7 +33,7 @@ export function TimeTrackingPanel({note,compact=false,onNoteChange}:{note:Note;c
  const [goalNote,setGoalNote]=useState(note),[enabled,setEnabled]=useState(note.trackTime),[active,setActive]=useState<TrackingSession>(),[total,setTotal]=useState(0),[todayTotal,setTodayTotal]=useState(0),[manualOpen,setManualOpen]=useState(false),[minutes,setMinutes]=useState(''),[comment,setComment]=useState(''),[pomodoro,setPomodoro]=useState(()=>createPomodoro()),[pomoMenu,setPomoMenu]=useState(false),[pomoMinutes,setPomoMinutes]=useState('25');
  const plan=useTimePlan().byId.get(note.id);
  const targetHours=plan?.targetHours??(note.goalEnabled?note.targetHours??0:0),fallbackDaily=note.deadline&&targetHours>0?Math.max(0,targetHours-total/3600000)/Math.max(1,calendarDays(localDate(new Date()),note.deadline)):undefined,dailyHours=plan?.dailyHours??fallbackDaily;
- const dailyLabel=dailyHours!==undefined?dailyHours.toFixed(1)+' ч':targetHours>0?'укажите дату':'0 ч';
+ const dailyLabel=dailyHours!==undefined?formatDailyHours(dailyHours):targetHours>0?'укажите дату':'0.0 ч';
  const [,refresh]=useState(0);
  const [resetPending,setResetPending]=useState(false),[trackingError,setTrackingError]=useState('');
  const ensureSaved=async()=>{if(!(await db.notes.get(note.id)))await db.notes.put({...note,trackTime:true,updatedAt:Date.now()})};
