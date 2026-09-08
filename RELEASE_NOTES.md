@@ -87,3 +87,12 @@ A minimal lock action beside drawing sets any nonempty password with no length, 
 The core protection service uses Web Crypto AES-256-GCM with random IVs, per-note salts and PBKDF2-SHA-256 (210000 iterations). Title, text and drawing are encrypted in IndexedDB and existing/new revision snapshots, and remain encrypted in JSON backups. The pending plaintext draft journal is bypassed for protected content. Metadata (color, hierarchy, planning flags, goal/time records and manual tracking comments) stays separate; child notes have independent protection. Earlier external backups cannot be retroactively protected. No password recovery exists.
 
 Protection is a core data service separate from UI and theme styles, not a plugin-specific storage path. Tests cover weak/Unicode/whitespace passwords, wrong-password rejection, encrypted edits/history, rotation/removal and backup round-trip. 99 tests pass. Browser checked the bottom lock icon and password dialog layout; credential lifecycle was verified with isolated automated tests.
+
+
+## 2026-09-08 — Photos and photo trash
+
+Notes and projects accept multiple local image files through the compact photo button. Supported formats are JPEG, PNG, WebP, GIF, AVIF and BMP. Photos appear as previews; clicking a preview opens the full image. Each preview has a trash icon in its upper-right corner. Removing a photo is recoverable: the photo is marked deleted and appears in the application's Trash view. Restore brings back the original photo; Clear photo trash permanently removes trashed photo data and its revision copies after confirmation.
+
+Photos are stored as data URLs with name, MIME type, dimensions and timestamps. Note updates, autosave, revisions and workspace JSON carry photo metadata. Protected notes encrypt photos with the same AES-GCM envelope as title, content and drawings. Photo trash does not delete the parent note or tracking history. Old notes without photos remain compatible.
+
+Validation: 105/105 tests pass, including photo trash restore/purge, encrypted photos and backup round trip. Browser checks covered the Add photo control and photo preview rendering.

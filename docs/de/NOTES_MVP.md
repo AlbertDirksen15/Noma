@@ -54,3 +54,8 @@ Das Stift-Symbol unten öffnet die Zeichenfläche: Bleistift, Stift, Marker, Rad
 ## Notizpasswort — 08.09.2026
 
 Das Schloss neben Zeichnen setzt ein beliebiges nichtleeres Passwort ohne Längen- oder Zeichenregeln. Titel, Text, Zeichnung und Versionen werden verschlüsselt. Nach dem Entsperren kann das Passwort geändert oder entfernt werden. Ohne Passwort gibt es keine Wiederherstellung. Metadaten und untergeordnete Notizen bleiben eigenständig.
+
+
+## Fotos und Papierkorb — 08.09.2026
+
+Mehrere Fotos können über das kompakte Bildsymbol eingefügt werden. Vorschauen öffnen die vollständige Ansicht. Das Papierkorb-Symbol verschiebt Fotos in den App-Papierkorb; dort können sie wiederhergestellt oder nach Bestätigung endgültig gelöscht werden. Geschützte Notizen verschlüsseln Fotos zusammen mit Text und Zeichnung.

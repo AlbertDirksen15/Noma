@@ -18,3 +18,6 @@ Drawing is the first self-contained content feature: src/drawing/model.ts contai
 
 
 Note protection is owned by src/protection/noteProtection.ts. All editable note content must pass through the canonical update service so future extensions cannot accidentally persist decrypted title/text/drawing. The cryptographic envelope has version 1; UI-only unlocked flags and in-memory keys are not persistent credentials. Future sensitive content blocks must extend the encrypted payload contract, revision migration and backup tests before shipping.
+
+
+Photos are a core content module under src/photos. PhotoRepository owns the data shape, validation, soft-delete and purge rules; Photos.tsx owns previews, viewer and trash UI. Future media plugins should use the same content and deletion contracts rather than writing blobs directly into arbitrary plugin tables.
