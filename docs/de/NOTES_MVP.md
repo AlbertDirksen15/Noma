@@ -69,3 +69,8 @@ Die Oberfläche kennzeichnet Notizen als eigenständige Aufzeichnung und Projekt
 ## Verschachtelte Notizen und Baumziele — 08.09.2026
 
 Notizen können weitere Notizen enthalten. Breadcrumbs verlinken gemischte Elternketten. Ziele summieren Zeit aus dem gesamten Unterbaum; die erforderliche Tagesrate wird nach Datumswahl ohne 24-Stunden-Limit angezeigt.
+
+
+## Ziel speichern — 08.09.2026
+
+Das Speichern von Zielen in normalen Notizen aktualisiert jetzt auch den Editorzustand und wird nicht durch späteres Autospeichern überschrieben.

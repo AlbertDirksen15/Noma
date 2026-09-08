@@ -105,3 +105,8 @@ Any note can now contain notes and subprojects. Note pages show breadcrumbs for 
 Goals aggregate tracking sessions across the full descendant tree (notes and projects). The goal panel shows hours already tracked inside the tree, remaining hours and required hours per day when a date is selected. The pace is never capped at 24 hours; values such as 29.7 h/day are shown directly. Goal baseline creation includes existing descendant sessions.
 
 Validation: 107/107 tests pass, lint/typecheck/build pass. New tests cover notes inside notes, mixed breadcrumbs, nested goal baselines and over-24-hour pace behavior.
+
+
+## 2026-09-08 — Goal persistence in note editors
+
+Goal saves now propagate the updated note back to the parent editor state as well as IndexedDB. This prevents a later autosave from displaying stale goal fields and makes target hours/date immediately durable for ordinary notes and projects.
