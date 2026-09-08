@@ -1,206 +1,160 @@
 # Noma Project Memory
 
-## What is Noma
-
-Noma is a local-first personal productivity app built around universal notes. It combines notes, projects, nested notes, time tracking, goals, workspace backup/restore, and a lightweight desktop local mode.
-
-## Core philosophy
-
-- Capture now, organize later.
-- The user owns the data.
-- No required cloud backend.
-- Google Keep-like simplicity.
-- Keep the core extensible for later plugins, themes, sync and platform shells.
-- Noma Core is GPL-3.0-or-later and will follow a WordPress-style extension
-  model: themes and plugins extend Core through documented APIs, not edits to
-  Core files.
-
-## UI and design
-
-- Light, warm yellow aesthetic.
-- Card-based layout with compact panels.
-- No heavy dashboard.
-- Optional features stay hidden or collapsed unless enabled.
-- Pomodoro is a small SVG circular ring beside the main timer.
-
-## Current MVP status
-
-- MVP 0.1–0.5: COMPLETE.
-- MVP 0.6 Pomodoro: IMPLEMENTATION COMPLETE / MANUAL VERIFICATION PARTIAL.
-- MVP 0.7 Version History: IMPLEMENTATION COMPLETE / MANUAL VERIFICATION PARTIAL.
-- MVP 0.8 Local Backup/Restore: COMPLETE; Google Drive is blocked by missing OAuth configuration.
-- MVP 0.9 Windows portable launcher preparation: COMPLETE.
-- MVP 1.0 portable Noma.exe: IMPLEMENTATION COMPLETE; executable signing and an installer remain future work.
-- Current release name: `Noma 1.0 Beta` (`1.0.0-beta.0`).
-
-## Implemented features
-
-- Notes, search and universal Note records.
-- Projects and nested notes.
-- Today and Inbox.
-- Archive and Trash with restore.
-- Persistent Time Tracking and manual entries.
-- Goals with target hours, deadline and required hours per day.
-- Pomodoro work intervals.
-- Note Version History with preview and restore.
-- Versioned Workspace Export/Import.
-- Workspace/device metadata and tombstones.
-- Local Backup/Restore UI.
-- Local desktop launcher with localhost serving, port fallback and browser opening.
-- Windows portable folder build with `Noma.cmd`, `Noma.ps1`, `README_RUN.txt`, `dist/` and the local server.
-
-## Important product decisions
-
-- Use the visible `Google Drive / Noma/` folder, not `appDataFolder`.
-- Build backup/restore before automatic sync.
-- Never fake Google Drive without a real OAuth Client ID.
-- No automatic two-way sync yet.
-- Time Tracking is the source of truth for real work time.
-- Pomodoro is only a rhythm indicator and must not automatically stop main tracking.
-
-## Pomodoro logic
-
-- A small SVG progress ring sits beside the main timer.
-- Red means an active work interval.
-- Green with a soft pulse means the interval is complete.
-- The main timer continues after Pomodoro completion.
-- Break is not a fixed countdown.
-- A new cycle starts manually.
-- Stop resets Pomodoro.
-
-## Goals logic
-
-- Stored fields include `targetHours` and `deadline`.
-- Calculations use actual tracked time and today tracked time.
-- Required hours/day = remaining hours / remaining calendar days.
-- The UI stays compact and shows the goal, deadline, remaining time and required pace.
-- Graph, forecast and ahead/behind are removed from the current scope.
-
-## Backup and sync logic
-
-- Workspace data is exported/imported as versioned local JSON.
-- Backup metadata includes `workspaceId`, `deviceId` and `schemaVersion`.
-- Tombstones preserve deletion information for later conflict-aware sync.
-- Google Drive remains blocked until an OAuth Client ID is configured.
-
-## Plugin and theme future ideas
-
-- WordPress-like actions, filters and hooks.
-- Blocks, widgets, views and app views.
-- Themes, templates and template parts.
-- Permissions and sandboxing.
-- A future plugin SDK after the core is stable.
-- Themes/plugins for the future official catalogue must be GPL-compatible.
-- Noma Mobile, Sync and the catalogue are separate official products.
-- The Noma name/logo have no registered trademark claim in this repository.
-
-## Future ideas
-
-- Companion plugin.
-- Noma Teacher.
-- Typing Trainer.
-- Skills apps.
-- Mobile app.
-- Real Google Drive sync.
-- Windows EXE packaging.
-
-## Current Git status
-
-- Branch: `feature/desktop-launcher`.
-- Verified launcher/test checkpoint: `1d7f819` (2026-09-07).
-- Package version: `0.9.0-local.0`.
-- Release tag: `v0.8.0-local` on `f6b5e9f`.
-- Release checkpoint exists.
-- Remote `origin`: https://github.com/AlbertDirksen15/Noma.git.
-- No push was performed during this MVP 0.9 task; earlier remote push state was not independently verified.
-
-## What not to do now
-
-- Do not start full automatic sync without a tombstone and conflict-resolution strategy.
-- Do not fake Google Drive.
-- Do not start the plugin SDK before the core is stable.
-- Do not overload the UI with a dashboard.
-
-## Next recommended steps
-
-- Manually test `npm run desktop` on Windows.
-- Run `npm run build:portable` and test `release/Noma-portable/Noma.cmd` on Windows.
-- Push only after separate user authorization. Do not create a new tag or release without authorization.
-- Later package Noma as `Noma.exe`.
-
-## MVP 0.9 portable verification — 0.9.0-local.0
-
-Build: `npm run build:portable`. Copy the complete generated `release/Noma-portable` folder: Noma.cmd, Noma.ps1, README_RUN.txt, dist/, server/. Generated artifacts are ignored by Git. Node.js 22.12+ or 24 LTS must be installed in PATH; no npm install is needed on the destination machine. This prepares EXE packaging but does not include a runtime or signed executable.
-
-Launch Noma.cmd. Noma.ps1 is optional and subject to PowerShell execution policy. Repository launchers also work after npm run build. Browser opening is automatic; the server binds only to 127.0.0.1:3847. Occupied ports fall back to the next port; at 65535 Windows chooses a free port. NOMA_PORT overrides the initial port; invalid values are rejected.
-
-Keep the terminal open. Ctrl+C gracefully stops the listener and allows active requests up to three seconds. Closing the browser does not stop the server. Missing dist/index.html reports a build instruction. Encoded traversal and symlinked files outside dist are rejected.
-
-Data is stored in browser IndexedDB, not in the portable folder. Browser profile and port are part of the storage origin: a fallback port can appear empty. Return to the original port/profile or use Workspace Export/Import. Export before moving computers. Stop Noma before rebuilding. If Windows prevents cleanup, the builder may reuse the folder; inspect it before distributing.
-
-Checks: npm run lint, npm run typecheck, npm test, npm run build, npm run build:portable. Tests cover port fallback/config, localhost binding, index/assets/SPA, traversal, missing output, graceful shutdown, copying real templates and stale asset removal. No push, tag or remote release is part of this checkpoint.
-
-Final verification on 2026-09-07: lint, typecheck, 76 tests across 12 files, build and build:portable passed using npm.cmd (the local npm.ps1 wrapper resolved a broken global npm path). Packaged templates and production assets match their sources byte-for-byte; packaged server HTTP index/SPA smoke and shutdown passed on Windows, bound to 127.0.0.1. Windows cleanup reused the output directory; inspection found only the expected seven files. Double-click launch and ordinary-browser interaction remain manually unverified. Existing uncommitted src/App.tsx and src/styles.css changes were preserved and are included in the working-tree build, but excluded from launcher commits.
-
-
-## 2026-09-08 — Notes UX and extension boundaries
-
-Immediate note autosave with a browser recovery journal; Close replaces Save and a pin replaces the editor cross. Cards support persistent drag ordering within pinned/unpinned groups; pinned notes precede new cards. Today starts with Current tasks and Recurring tasks (Russian labels in the app). Goals support optional deadlines. The top timer drawer pauses running work when collapsed; resetting completes the current session without deleting tracked history. Sidebar uses consistent icons and soft selection. Project creation is in the sidebar; duplicate project strips and broken flex page layout were removed.
-
-Theme tokens live in src/themes/default.css; navigation metadata in src/core/navigation.ts. Core services retain data ownership. See docs/EXTENSIBILITY.md for the WordPress-inspired future actions, filters, slots and theme boundaries. No plugin runtime/SDK is implemented.
-
-Validation: 83 tests, lint/typecheck and production build pass. Browser checks cover reload autosave, timer collapse/pause/reset, undated goals and project layout. Existing portable runtime is locked; an updated portable copy is prepared separately. Existing uncommitted desktop-server changes are preserved outside this UX commit.
-
-
-## 2026-09-08 — Timer controls refinement
-
-The small drawer indicator is filled green for both running and paused open sessions; collapse still pauses tracking. Reset total time is directly below Total. It resets the displayed counter using per-session totalExcludedMs metadata, preserving history, goal progress, today totals and timer state. Reset timer moved into the Pomodoro dots menu alongside a separately labelled Reset Pomodoro. The expanded drawer allows the settings menu to remain fully visible.
-
-The reset command belongs to trackingRepository; the UI invokes it and theme CSS owns indicator styling. Existing backups remain compatible: omitted totalExcludedMs means zero; exports preserve reset metadata. Validation: lint/typecheck/build pass, 87 tests pass; browser verifies green paused indicator, total reset and timer reset from the menu.
-
-
-2026-09-08: User requested English author credit. Added “Made by Albert D.” to the shared application shell, bottom-right, styled through theme text color.
-
-
-## 2026-09-08 — Drawing in notes
-
-Added a minimal pen-in-circle action at the bottom of note editors, including project notes. The separate drawing editor provides pencil, pen, translucent marker, stroke eraser, color and width controls, undo/redo and Done. Mouse, touch and pen use Pointer Events. Vector strokes autosave through the existing note service during drawing and at stroke completion; previews appear in notes, cards and revision history. Drawing data round-trips through workspace backup/import. Old notes without drawing fields remain compatible.
-
-The versioned drawing model and geometric operations live in src/drawing/model.ts; UI and theme styling are separate. No plugin runtime is introduced. Eraser removes a whole touched stroke and can be undone; pressure-sensitive brushes and standalone image export are outside this increment. Browser checked pen/marker strokes, undo/redo, eraser and reload recovery. Tests: 92/92.
-
-
-## 2026-09-08 — Note passwords
-
-A minimal lock action beside drawing sets any nonempty password with no length, character or complexity rules. Unlocking is required to read/edit protected content. The unlocked note can change/remove its password or lock again; closing the note forgets its session key. Passwords are never stored.
-
-The core protection service uses Web Crypto AES-256-GCM with random IVs, per-note salts and PBKDF2-SHA-256 (210000 iterations). Title, text and drawing are encrypted in IndexedDB and existing/new revision snapshots, and remain encrypted in JSON backups. The pending plaintext draft journal is bypassed for protected content. Metadata (color, hierarchy, planning flags, goal/time records and manual tracking comments) stays separate; child notes have independent protection. Earlier external backups cannot be retroactively protected. No password recovery exists.
-
-Protection is a core data service separate from UI and theme styles, not a plugin-specific storage path. Tests cover weak/Unicode/whitespace passwords, wrong-password rejection, encrypted edits/history, rotation/removal and backup round-trip. 99 tests pass. Browser checked the bottom lock icon and password dialog layout; credential lifecycle was verified with isolated automated tests.
-
-
-## 2026-09-08 — Photos and photo trash
-
-Notes and projects accept multiple local image files through the compact photo button. Supported formats are JPEG, PNG, WebP, GIF, AVIF and BMP. Photos appear as previews; clicking a preview opens the full image. Each preview has a trash icon in its upper-right corner. Removing a photo is recoverable: the photo is marked deleted and appears in the application's Trash view. Restore brings back the original photo; Clear photo trash permanently removes trashed photo data and its revision copies after confirmation.
-
-Photos are stored as data URLs with name, MIME type, dimensions and timestamps. Note updates, autosave, revisions and workspace JSON carry photo metadata. Protected notes encrypt photos with the same AES-GCM envelope as title, content and drawings. Photo trash does not delete the parent note or tracking history. Old notes without photos remain compatible.
-
-Validation: 105/105 tests pass, including photo trash restore/purge, encrypted photos and backup round trip. Browser checks covered the Add photo control and photo preview rendering.
-
-
-## 2026-09-08 — Project versus note clarity
-
-The UI now explains the distinction everywhere it matters: a note is labelled “Заметка · запись” and a project “Проект · папка”. Project pages include an explainer that projects contain notes and subprojects, plus a “Содержимое проекта” section with its item count. Children are labelled “Заметка” or “Подпроект”. The data model remains compatible: both are Note records and isProject controls the container behavior, preserving the future plugin/content-block boundary.
-
-
-## 2026-09-08 — Nested notes and tree-wide goals
-
-Any note can now contain notes and subprojects. Note pages show breadcrumbs for mixed parent chains and a “Вложенные записи” section with quick links and actions for a child note or subproject. Project breadcrumbs also navigate correctly when a parent is a note.
-
-Goals aggregate tracking sessions across the full descendant tree (notes and projects). The goal panel shows hours already tracked inside the tree, remaining hours and required hours per day when a date is selected. The pace is never capped at 24 hours; values such as 29.7 h/day are shown directly. Goal baseline creation includes existing descendant sessions.
-
-Validation: 107/107 tests pass, lint/typecheck/build pass. New tests cover notes inside notes, mixed breadcrumbs, nested goal baselines and over-24-hour pace behavior.
-
-
-## 2026-09-08 — Goal persistence in note editors
-
-Goal saves now propagate the updated note back to the parent editor state as well as IndexedDB. This prevents a later autosave from displaying stale goal fields and makes target hours/date immediately durable for ordinary notes and projects.
+This document is the source of truth for implemented Noma behavior and the current project state. `ROADMAP.md` is the source of truth for planned work. Current code and Git state take priority if either document conflicts with the repository.
+
+`NOMA_MASTER_CONTEXT_PROMPT.txt` is retained as a historical record. It describes an earlier project state, is outdated and must not be used as the current source of truth.
+
+## 1. CURRENT STATE
+
+- Product: Noma, a local-first notes, projects, planning and time-tracking application.
+- Development branch: `feature/desktop-launcher`.
+- Current HEAD: `050f818` (`chore: update gitignore`).
+- Remote: `origin` points to `https://github.com/AlbertDirksen15/Noma.git`.
+- At the documentation checkpoint, local `feature/desktop-launcher` and `origin/feature/desktop-launcher` both point to `050f818` (`+0/-0`).
+- These documentation edits are intentionally uncommitted until user review.
+- Declared package version: `1.0.0-beta.0` in `package.json`.
+- Known version mismatch: `package-lock.json` still says `0.9.0-local.0`.
+- Known backup metadata mismatch: workspace exports still write `appVersion: 0.8.0`.
+- Existing Git release tag: `v0.8.0-local`. There is no `1.0.0-beta.0` tag.
+- The repository contains 134 test scenarios. They have not been run against the current HEAD during this documentation update, so this document does not claim that they currently pass.
+- Development uses the source tree and dev version. Portable output is built only after an explicit user command to build a release.
+- The only official portable output path is `release/Noma-portable` inside the Noma source repository. The separate `outputs/Noma-portable` folder was a temporary fallback created while the official portable folder was locked; it is not a second release location and should stop being used after the official folder is verified. If the official folder is locked, stop the running Noma instance before continuing; do not create another output path.
+
+Noma stores user data locally in browser IndexedDB through Dexie. Notes and projects share the universal `Note` record; `isProject` selects project/container behavior. The hierarchy is stored through `parentId`, allowing notes and projects to contain notes and subprojects.
+
+The current Windows portable design includes `Noma.exe`, `runtime/node.exe`, the local server and the production frontend. A separate Node.js installation is not required on the destination computer. The basic EXE exists, but it is still a console-style process launcher. The planned silent tray launcher is not complete.
+
+The architecture is prepared for WordPress-inspired extension boundaries: core owns data and behavior, themes own presentation, and future plugins will use documented contracts. There is no plugin runtime or public plugin SDK yet.
+
+## 2. COMPLETED
+
+### Notes and workspace
+
+- Local note creation, editing, search and persistence.
+- Immediate autosave and a recovery journal for open, incomplete drafts.
+- Close saves pending changes; `Ctrl+S` is also supported in full note view.
+- Persistent pinning and drag ordering within pinned and unpinned groups.
+- Pinned cards remain before unpinned cards, and new cards appear after pinned content.
+- Sidebar views for All notes, All projects, Today, Inbox, Archive and Trash.
+- Soft archive/trash lifecycle with restore and permanent subtree deletion support.
+- Today initialization with the default current-tasks and recurring-tasks notes.
+- Minimal sidebar selection, icons, top creation actions and persistent workspace chrome.
+- Global workspace counters for total tracked time, today and required daily time.
+- Application credit: `Made by Albert D.`.
+
+### Projects, nesting and navigation
+
+- Projects and notes use one compatible data model while presenting different interfaces.
+- Projects are shown as folder-style cards with filled colored tabs and a larger color rotation.
+- All Projects opens in the normal workspace area with the main header and sidebar preserved.
+- A project opens as a board containing only nested notes and subprojects.
+- Project title links to a separate project-description page with title and description but no timer.
+- Notes can contain notes and subprojects.
+- Breadcrumbs resolve mixed note/project parent chains.
+- Notes and projects can be moved from their own views with cycle protection.
+- Archive, trash, restore and permanent deletion operate on complete subtrees.
+- Project and note child actions use compact text controls with separators.
+
+### Time tracking, goals and Pomodoro
+
+- Persistent Start, Pause, Resume and Stop sessions.
+- One active timer across the workspace.
+- Manual time entries with optional comments.
+- Total and today counters for individual notes and complete descendant trees.
+- Reset Total changes the displayed counter without deleting tracking history or goal progress.
+- The timer drawer pauses a running session when collapsed.
+- A small status circle shows an engaged running or paused session.
+- A note without a goal shows no compact goal/time block while its timer is collapsed.
+- A goal note shows Total, Today and Required per day while the timer is collapsed.
+- A project always shows its compact aggregated time summary.
+- Pomodoro has a progress ring, configurable duration and separate reset controls.
+- Reset Timer is inside the Pomodoro options menu.
+- Note goals accept hours with or without a deadline.
+- Incomplete hours or date text is stored as a draft and survives closing.
+- Complete goals autosave, and an explicit Save Goal action is available.
+- Required per day is recalculated from remaining target time, tracked progress and remaining calendar days.
+- Small daily values are shown in minutes; large values are not capped at 24 hours per day.
+- A project accepts a deadline but no direct target-hours value.
+- Project target, remaining time and required daily time are aggregated from descendant notes and projects.
+- Descendant tracking is counted once across mixed trees.
+- A descendant deadline later than its project deadline shows a red, focusable Requires attention indicator.
+- Planning and counted session time are limited to the effective project deadline.
+
+### Note content, media and protection
+
+- Inline vector drawing inside the note view without opening another browser tab.
+- Pencil, pen, translucent marker, stroke eraser, color, width, undo and redo controls.
+- Drawing previews on notes, cards and history revisions.
+- Local image insertion with compact previews and full-image viewing.
+- Photo deletion uses the application Trash and supports restore or permanent purge.
+- Any nonempty password can protect a note; there are no composition or length rules.
+- Protected title, text, drawing and photos use AES-256-GCM with PBKDF2-derived keys.
+- Passwords are not persisted, and closing a note forgets its unlocked session key.
+- Protected data remains encrypted in revisions and workspace backups.
+
+### History and backup
+
+- Persistent snapshot history for significant note and project changes.
+- Revision preview, full restore and title/content-only restore.
+- History retention and coalescing for frequent edits.
+- Versioned JSON workspace export/import for notes, sessions, revisions and tombstones.
+- Workspace and device identity metadata.
+- Local Backup/Restore interface.
+
+### Desktop and extension preparation
+
+- Localhost-only static server with default port `3847`, port fallback and browser opening.
+- Static assets, SPA fallback, traversal protection and graceful server shutdown support.
+- Authenticated local shutdown endpoint and runtime-state-file support in the server.
+- Portable builder for `Noma.exe`, bundled `runtime/node.exe`, server files and `dist/`.
+- `release/`, `dist/`, `node_modules/`, `.npm-cache/` and logs are excluded from Git.
+- Default theme tokens live separately from application logic.
+- Navigation metadata and project-card styling have dedicated core modules.
+- Drawing, photos, protection, tracking, goals, tree operations and backup use separate service boundaries suitable for future extension contracts.
+
+## 3. IN PROGRESS
+
+### Desktop launcher completion
+
+The basic `Noma.exe` exists and launches the bundled Node runtime. The complete Windows launcher experience is still in progress:
+
+- connect the C# launcher to the server shutdown token and runtime-state file;
+- start without a visible console window;
+- add a system-tray icon with Open Noma and Exit actions;
+- detect or reuse an already-running local Noma instance;
+- stop the local server cleanly from the tray;
+- replace console-only failures with understandable Windows dialogs;
+- verify launcher behavior as one completed block before creating a new portable release.
+
+### Consistency and verification
+
+- `package-lock.json` must be updated from `0.9.0-local.0` to `1.0.0-beta.0` without changing dependencies unnecessarily.
+- Workspace backup `appVersion` must stop reporting `0.8.0` and use the current application version from a single source.
+- README, specification, changelog and release notes still contain historical Node-required and pre-EXE statements that need clearer historical labeling or removal from current instructions.
+- The 134 existing test scenarios need one consolidated run after the desktop-launcher block; no passing status is claimed yet.
+- Recent interface changes still need a focused manual check in the dev version.
+
+## 4. NEXT
+
+After the current desktop launcher is complete:
+
+1. Run focused desktop-server and portable-builder checks, then one consolidated typecheck/test/build verification for the completed block.
+2. Correct the version mismatch in `package-lock.json` and replace the hard-coded backup `appVersion` with the current application version.
+3. Manually verify the dev-version flows for notes, projects, nested planning, deadline warnings, photos, drawing, passwords, archive/trash and backup restore.
+4. Update `README.md`, `NOMA_SPEC.md`, `CHANGELOG.md` and `RELEASE_NOTES.md` so current instructions are separated from historical release notes.
+5. Create a logical commit in feature/desktop-launcher. Push only when the user explicitly requests it or when creating a deliberate remote checkpoint. Do not build a portable release unless separately requested.
+6. Define the MVP 1.1 Plugin Foundation contracts before implementing plugin loading: manifest schema, versioned actions and filters, UI slots, permissions, lifecycle and namespaced backup metadata.
+
+## 5. FUTURE ROADMAP
+
+- MVP 1.1 Themes & Plugin Foundation.
+- Declarative plugin manifests and compatibility rules.
+- Versioned actions, filters, commands, blocks, views and navigation slots.
+- Plugin permission model, sandbox boundaries, activation/deactivation and safe failure handling.
+- Extension-management UI and future official extension catalogue.
+- Theme packages, templates and template parts.
+- Real Google Drive OAuth and visible `Google Drive / Noma/` synchronization.
+- Tombstone-aware conflict resolution before automatic two-way sync.
+- Signed Windows executable and installer.
+- Mobile application and cross-device synchronization.
+- Future extensions such as Companion, Noma Teacher, Typing Trainer and Skills apps.
