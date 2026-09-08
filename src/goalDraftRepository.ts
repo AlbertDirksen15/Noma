@@ -1,3 +1,4 @@
+import {projectDeadlineFor} from './timePlan';
 import {db,newNote,type Note} from './data';
 import {localDate} from './goalRepository';
 import {updateNoteFields} from './noteUpdateService';
@@ -13,16 +14,19 @@ export function parseGoalDate(raw:string):string|null|undefined {
  const date=new Date(`${iso}T12:00:00`);
  return Number.isFinite(date.getTime())&&localDate(date)===iso?iso:undefined;
 }
-export function goalDraftFields(note:Note,hours:string,date:string):Partial<Note>{
+export function goalDraftFields(note:Note,hours:string,date:string,projectDeadline?:string):Partial<Note>{
  const target=Number(hours.replace(',','.')),deadline=parseGoalDate(date);
- const valid=hours.trim()!==''&&Number.isFinite(target)&&target>0&&deadline!==undefined;
- return {goalDraftHours:hours,goalDraftDeadline:date,goalEnabled:valid,targetHours:valid?target:null,deadline:deadline??null,goalStartDate:note.goalStartDate??localDate(new Date()),goalUpdatedAt:Date.now()};
+ const valid=note.isProject?!!deadline:hours.trim()!==''&&Number.isFinite(target)&&target>0&&deadline!==undefined;
+ const effective=deadline&&projectDeadline&&deadline>projectDeadline?projectDeadline:deadline;
+ return {goalDraftHours:note.isProject?'':hours,goalDraftDeadline:date,goalEnabled:valid,targetHours:!note.isProject&&valid?target:null,deadline:effective??null,goalStartDate:note.goalStartDate??localDate(new Date()),goalUpdatedAt:Date.now()};
 }
 export function persistGoalDraft(note:Note,fields:Partial<Note>){
  pending[note.id]=fields;journal();
  const task=queue.then(()=>db.transaction('rw',db.notes,db.noteRevisions,async()=>{
   if(!await db.notes.get(note.id))await db.notes.put(note);
-  const saved=await updateNoteFields(note.id,fields);
+  const current=(await db.notes.get(note.id))!,limit=projectDeadlineFor(current,new Map((await db.notes.toArray()).map(n=>[n.id,n])));
+  const bounded=fields.deadline&&limit&&fields.deadline>limit?{...fields,deadline:limit}:fields;
+  const saved=await updateNoteFields(note.id,bounded);
   if(pending[note.id]===fields){delete pending[note.id];journal()}
   return saved;
  }));queue=task.then(()=>{},()=>{});return task;
