@@ -1,19 +1,22 @@
+import PasswordButton,{UnlockNote} from './protection/PasswordButton';
+import {isLocked,forgetPassword} from './protection/noteProtection';
 import DrawingButton,{DrawingPreview} from './drawing/DrawingEditor';
 import { useEffect,useState } from 'react';
 import { ArrowLeft,Pin } from 'lucide-react';
 import { useLocation,useNavigate } from 'react-router-dom';
 import { db,type Note } from './data';
 import NoteHistoryPanel from './NoteHistoryPanel';
-import {saveDraft} from './noteEditing';
+import {saveDraft,flushDrafts} from './noteEditing';
 import { TimeTrackingPanel } from './TimeTrackingPanel';
 
 export default function NoteView(){
  const id=useLocation().pathname.split('/')[2],navigate=useNavigate();
  const [note,setNote]=useState<Note>(),[historyOpen,setHistoryOpen]=useState(false);
- useEffect(()=>{if(id)void db.notes.get(id).then(setNote)},[id]);
+ useEffect(()=>{if(id)void db.notes.get(id).then(setNote);return()=>{void flushDrafts().then(()=>forgetPassword(id))}},[id]);
  const save=async()=>{if(note)await saveDraft(note)};
  const edit=(n:Note)=>{setNote(n);void saveDraft(n)};
  useEffect(()=>{const handler=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();void save()}};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler)},[note]);
  if(!note)return <main className="content"><button onClick={()=>navigate('/')}>Назад</button><h1>Заметка не найдена</h1></main>;
- return <main className={'content '+note.color}><button className="back" onClick={()=>navigate(-1)}><ArrowLeft size={16}/> Назад</button><div className="note-page-actions"><button aria-label="Закрепить" onClick={()=>edit({...note,pinned:!note.pinned})}><Pin size={20} fill={note.pinned?'currentColor':'none'}/></button><button onClick={()=>setHistoryOpen(true)}>История</button></div><TimeTrackingPanel key={note.id} note={note}/><input className="title-input" value={note.title} placeholder="Название" onChange={event=>edit({...note,title:event.target.value})}/><textarea className="note-page-text" value={note.content} placeholder="Напишите что-нибудь…" onChange={event=>edit({...note,content:event.target.value})}/><DrawingPreview drawing={note.drawing}/><DrawingButton key={note.id} drawing={note.drawing} onChange={drawing=>edit({...note,drawing})}/><button className="save" onClick={()=>void save().then(()=>navigate(-1))}>Закрыть</button>{historyOpen&&<NoteHistoryPanel note={note} onChange={setNote} onClose={()=>setHistoryOpen(false)}/>}</main>
+ if(isLocked(note))return <UnlockNote note={note} onChange={setNote} onClose={()=>navigate(-1)}/>;
+ return <main className={'content '+note.color}><button className="back" onClick={()=>navigate(-1)}><ArrowLeft size={16}/> Назад</button><div className="note-page-actions"><button aria-label="Закрепить" onClick={()=>edit({...note,pinned:!note.pinned})}><Pin size={20} fill={note.pinned?'currentColor':'none'}/></button><button onClick={()=>setHistoryOpen(true)}>История</button></div><TimeTrackingPanel key={note.id} note={note}/><input className="title-input" value={note.title} placeholder="Название" onChange={event=>edit({...note,title:event.target.value})}/><textarea className="note-page-text" value={note.content} placeholder="Напишите что-нибудь…" onChange={event=>edit({...note,content:event.target.value})}/><DrawingPreview drawing={note.drawing}/><PasswordButton note={note} onChange={setNote}/><DrawingButton key={note.id} drawing={note.drawing} onChange={drawing=>edit({...note,drawing})}/><button className="save" onClick={()=>void save().then(()=>navigate(-1))}>Закрыть</button>{historyOpen&&<NoteHistoryPanel note={note} onChange={setNote} onClose={()=>setHistoryOpen(false)}/>}</main>
 }

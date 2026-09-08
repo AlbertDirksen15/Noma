@@ -1,3 +1,5 @@
+import Dexie from 'dexie';
+import {canDecrypt,unseal,protectSnapshot} from './protection/noteProtection';
 import { db, type Note, type NoteRevision, type NoteSnapshot, type RevisionReason } from './data';
 import { updateNoteFields } from './noteUpdateService';
 
@@ -10,11 +12,11 @@ export const snapshotNote=(note:Note):NoteSnapshot=>({drawing:note.drawing,pomod
 const changed=(note:Note,fields:Partial<Note>)=>versionedKeys.some(key=>key in fields&&fields[key]!==note[key]);
 const reasonFor=(fields:Partial<Note>,override?:RevisionReason):RevisionReason=>{if(override)return override;const keys=Object.keys(fields).filter(key=>!lifecycleKeys.has(key as keyof Note));if(keys.every(key=>key==='title'||key==='content'))return 'content';if(keys.every(key=>key==='color'))return 'appearance';if(keys.every(key=>key==='inToday'||key==='inInbox'))return 'planning';if(keys.every(key=>key==='parentId'||key==='isProject'))return 'move';if(keys.every(key=>key==='trackTime'||key==='pomodoroMinutes'))return 'tracking';if(keys.some(key=>['goalEnabled','targetHours','deadline','goalStartDate','actualHoursAtGoalStart','goalUpdatedAt'].includes(key)))return 'goal';return 'mixed'};
 
-export const getRevisions=(noteId:string)=>db.noteRevisions.where('noteId').equals(noteId).toArray().then(revisions=>revisions.sort((a,b)=>b.createdAt-a.createdAt||b.id.localeCompare(a.id)));
-export const getRevision=(id:string)=>db.noteRevisions.get(id);
+export const getRevisions=(noteId:string)=>db.noteRevisions.where('noteId').equals(noteId).toArray().then(async revisions=>Promise.all(revisions.sort((a,b)=>b.createdAt-a.createdAt||b.id.localeCompare(a.id)).map(async r=>canDecrypt(noteId)?{...r,snapshot:await Dexie.waitFor(unseal(noteId,r.snapshot))}:r)));
+export const getRevision=async(id:string)=>{const r=await db.noteRevisions.get(id);return r&&canDecrypt(r.noteId)?{...r,snapshot:await Dexie.waitFor(unseal(r.noteId,r.snapshot))}:r};
 export const trimRevisions=async(noteId:string,limit=REVISION_LIMIT)=>{const revisions=await getRevisions(noteId);await Promise.all(revisions.slice(limit).map(revision=>db.noteRevisions.delete(revision.id)))};
 export const deleteRevisionsForNote=(noteId:string)=>db.noteRevisions.where('noteId').equals(noteId).delete();
-export const createRevision=async(note:Note,reason:RevisionReason,createdAt=Date.now())=>{const revision:NoteRevision={id:crypto.randomUUID(),noteId:note.id,snapshot:snapshotNote(note),createdAt,reason};await db.noteRevisions.add(revision);await trimRevisions(note.id);return revision};
+export const createRevision=async(note:Note,reason:RevisionReason,createdAt=Date.now())=>{const revision:NoteRevision={id:crypto.randomUUID(),noteId:note.id,snapshot:await Dexie.waitFor(protectSnapshot(note,snapshotNote(note))),createdAt,reason};await db.noteRevisions.add(revision);await trimRevisions(note.id);return revision};
 export const captureRevisionBeforeUpdate=async(note:Note,fields:Partial<Note>,options:{reason?:RevisionReason;force?:boolean;now?:number}={})=>{if(!changed(note,fields))return undefined;const now=options.now??Date.now();if(!options.force){const latest=(await getRevisions(note.id))[0];if(latest&&now-latest.createdAt<REVISION_COALESCE_MS)return undefined}return createRevision(note,reasonFor(fields,options.reason),now)};
 
 const parentIsSafe=async(noteId:string,parentId:string|null)=>{if(!parentId)return true;if(parentId===noteId)return false;const parent=await db.notes.get(parentId);if(!parent||parent.deletedAt||parent.archivedAt)return false;const all=await db.notes.toArray();let cursor:Note|undefined=parent;const seen=new Set<string>();while(cursor?.parentId){if(cursor.id===noteId||seen.has(cursor.id))return false;seen.add(cursor.id);cursor=all.find(note=>note.id===cursor!.parentId)}return cursor?.id!==noteId};

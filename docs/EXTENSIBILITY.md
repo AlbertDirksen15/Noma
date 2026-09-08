@@ -15,3 +15,6 @@ This document is a design boundary, not a promise of an available WordPress-comp
 
 
 Drawing is the first self-contained content feature: src/drawing/model.ts contains the versioned vector data and pure geometry, DrawingEditor.tsx the UI, and drawing.css the themed controls. Persistence uses the existing note service rather than a separate drawing database; backup and revision contracts include drawing data. This is a core feature today, with module boundaries suitable for a future content-block API.
+
+
+Note protection is owned by src/protection/noteProtection.ts. All editable note content must pass through the canonical update service so future extensions cannot accidentally persist decrypted title/text/drawing. The cryptographic envelope has version 1; UI-only unlocked flags and in-memory keys are not persistent credentials. Future sensitive content blocks must extend the encrypted payload contract, revision migration and backup tests before shipping.

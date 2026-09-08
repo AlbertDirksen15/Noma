@@ -49,3 +49,8 @@ Der kleine Indikator bleibt bei laufender und pausierter Sitzung grün gefüllt.
 ## Zeichnen — 08.09.2026
 
 Das Stift-Symbol unten öffnet die Zeichenfläche: Bleistift, Stift, Marker, Radierer für ganze Striche, Farbe, Breite sowie Rückgängig/Wiederholen. Zeichnungen werden automatisch gespeichert und in Vorschauen, Versionsverlauf und Backups berücksichtigt.
+
+
+## Notizpasswort — 08.09.2026
+
+Das Schloss neben Zeichnen setzt ein beliebiges nichtleeres Passwort ohne Längen- oder Zeichenregeln. Titel, Text, Zeichnung und Versionen werden verschlüsselt. Nach dem Entsperren kann das Passwort geändert oder entfernt werden. Ohne Passwort gibt es keine Wiederherstellung. Metadaten und untergeordnete Notizen bleiben eigenständig.
