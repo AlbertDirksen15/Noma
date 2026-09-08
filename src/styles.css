@@ -54,3 +54,18 @@ aside>.new,.project-sidebar>.new,.project-actions>.new{height:38px;padding:8px 1
 .project-card.project-tab::before{background:var(--project-tab-color);border-color:var(--project-tab-color);opacity:1}
 
 .title-row{align-items:center}.goal-form{display:flex;gap:8px;flex-wrap:wrap}.goal-form input{flex:1 1 140px}.app>main>.content{display:block}.note-time-badge{color:var(--noma-text)}
+
+/* Text actions share the same quiet style in the persistent workspace. */
+.project-topbar{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+.project-topbar .back{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:0;background:transparent;box-shadow:none;padding:6px 0;color:var(--noma-text);font:inherit;font-size:12px;cursor:pointer}
+.project-content .project-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:16px;margin:0;flex-wrap:nowrap}
+.project-toolbar>button,.app .header-actions>button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:0;background:transparent;box-shadow:none;color:var(--noma-text);font:inherit;font-size:12px;font-weight:400;line-height:20px;height:32px;padding:6px 0;margin:0;white-space:nowrap;cursor:pointer;transform:none}
+.project-toolbar>button:hover,.app .header-actions>button:hover,.project-topbar .back:hover{color:var(--noma-accent);background:transparent;box-shadow:none;transform:none}
+.project-toolbar>button:focus-visible,.app .header-actions>button:focus-visible{outline:2px solid var(--noma-accent);outline-offset:4px}
+.action-divider{width:1px;height:14px;background:var(--noma-text);opacity:.18;flex:0 0 1px}
+.project-toolbar .project-pin{width:24px;min-width:24px;padding:0}
+.app .header-actions{gap:18px}.app .header-actions>button+button{position:relative;margin-left:18px}.app .header-actions>button+button::before{content:'';position:absolute;left:-18px;top:9px;width:1px;height:14px;background:var(--noma-text);opacity:.18}
+.app{height:100dvh;min-height:0;display:flex;flex-direction:column}.app>header{flex-shrink:0}.app>main{flex:1;min-height:0;overflow:hidden}.app>main>aside{overflow-y:auto}.app>main>.content,.app>main>.workspace-detail{overflow-y:auto;min-height:0;max-width:none}.project-content{padding:42px 48px;background:var(--noma-canvas)}
+@media(max-width:700px){.project-content{padding:28px 18px}.project-topbar{gap:12px}.project-content .project-toolbar{gap:10px;flex-wrap:wrap;justify-content:flex-start}.project-toolbar>button{font-size:11px}.app .header-actions{gap:12px}.app .header-actions>button+button{margin-left:12px}.app .header-actions>button+button::before{left:-12px}}
+
+.app .small-add{width:30px;height:30px;padding:5px;border:0;border-radius:0;background:transparent;color:var(--noma-text);box-shadow:none}.app .small-add:hover{color:var(--noma-accent)}
