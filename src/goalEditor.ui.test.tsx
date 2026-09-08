@@ -1,0 +1,36 @@
+// @vitest-environment jsdom
+import 'fake-indexeddb/auto';
+import {act,useState} from 'react';
+import {createRoot,type Root} from 'react-dom/client';
+import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {db,newNote,type Note} from './data';
+import GoalPanel from './GoalPanel';
+import {flushGoalDrafts} from './goalDraftRepository';
+import {flushDrafts} from './noteEditing';
+import {MemoryRouter} from 'react-router-dom';
+import App from './App';
+import ProjectView from './ProjectView';
+import {TimePlanProvider} from './TimeSummary';
+let root:Root,host:HTMLDivElement;
+(globalThis as any).IS_REACT_ACT_ENVIRONMENT=true;
+beforeEach(async()=>{await db.notes.clear();await db.noteRevisions.clear();await db.trackingSessions.clear();host=document.createElement('div');document.body.append(host);root=createRoot(host)});
+afterEach(async()=>{await act(async()=>root.unmount());host.remove();await flushDrafts()});
+const mount=async(node:React.ReactNode)=>act(async()=>root.render(node));
+const input=async(label:string,value:string)=>{await act(async()=>{const el=host.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)!;Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!.call(el,value);el.dispatchEvent(new Event('input',{bubbles:true}));await flushGoalDrafts()})};
+function Editor({note}:{note:Note}){const [n,set]=useState(note);return <GoalPanel note={n} onChange={set}/>}
+it('keeps the form open after the first digit and restores incomplete fields after reopening',async()=>{const n=newNote();await mount(<Editor note={n}/>);await act(async()=>host.querySelector('button')!.click());await input('Целевые часы','1');expect(host.querySelector('input')).not.toBeNull();await input('Целевые часы','120');await input('Дата цели (необязательно)','12.09.20');await act(async()=>root.render(null));const reloaded=(await db.notes.get(n.id))!;await mount(<Editor note={reloaded}/>);expect(host.querySelector<HTMLInputElement>('input[aria-label="Целевые часы"]')?.value).toBe('120');expect(host.querySelector<HTMLInputElement>('input[aria-label="Дата цели (необязательно)"]')?.value).toBe('12.09.20');expect(host.textContent).not.toContain('Сохранить цель')});
+it('keeps the shell and creation actions on the project page',async()=>{const p=newNote({isProject:true,title:'Test project'});await db.notes.put(p);await mount(<MemoryRouter initialEntries={['/project/'+p.id]}><TimePlanProvider><App><ProjectView/></App></TimePlanProvider></MemoryRouter>);await act(async()=>vi.waitFor(()=>expect(host.querySelector('[placeholder="Название проекта"]')).not.toBeNull()));expect(host.querySelectorAll('aside')).toHaveLength(1);expect(host.querySelector('.nav.active')?.textContent).toBe('Все проекты');expect(host.querySelector('.note-page-actions')?.textContent).toContain('Новая заметка');expect(host.querySelector('.note-page-actions')?.textContent).toContain('Новый проект');expect(host.querySelector('.project-content .project-actions')).toBeNull()});
+
+import DrawingButton from './drawing/DrawingEditor';
+import {emptyDrawing} from './drawing/model';
+import {PhotoGallery} from './photos/Photos';
+import {MoveToProject} from './NoteLocation';
+import {TimeTrackingPanel} from './TimeTrackingPanel';
+import {getSessionsForNote} from './trackingRepository';
+const click=async(label:string)=>{await act(async()=>{const b=[...host.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')===label||b.textContent?.trim()===label);expect(b,`button ${label}`).toBeTruthy();b!.click();await new Promise(r=>setTimeout(r,30))})};
+it('renders drawing tools inside the note slot and closes without leaving the note',async()=>{await mount(<><div id="drawing-test"/><DrawingButton targetId="drawing-test" drawing={emptyDrawing()} onChange={()=>{}}/></>);await click('Рисовать');expect(host.querySelector('#drawing-test [aria-label="Холст для рисования"]')).not.toBeNull();expect(document.querySelector('[aria-modal="true"]')).toBeNull();await click('Маркер');expect(host.querySelector('[aria-label="Маркер"]')?.getAttribute('aria-pressed')).toBe('true');await click('Готово');expect(host.querySelector('.drawing-editor')).toBeNull()});
+it('opens photos at full size and moves them into recoverable trash',async()=>{const photo={id:'photo',name:'test.png',mime:'image/png',src:'data:image/png;base64,AA==',width:10,height:10,createdAt:1,deletedAt:null};const n=newNote({photos:[photo]});const changed=vi.fn();await mount(<PhotoGallery note={n} onChange={changed}/>);await click('Открыть фото test.png');expect(document.querySelector('.photo-full')).not.toBeNull();await act(async()=>{(document.querySelector('[aria-label="Удалить открытое фото"]') as HTMLButtonElement).click()});expect(changed.mock.calls[0][0].photos[0].deletedAt).toBeGreaterThan(0);expect(document.querySelector('.photo-full')).toBeNull()});
+it('moves an unsaved note into a project from its own controls',async()=>{const p=newNote({isProject:true,title:'Destination'}),n=newNote({title:'Source'});await db.notes.put(p);const changed=vi.fn();await mount(<MoveToProject note={n} onChange={changed}/>);await click('В проект');await act(async()=>vi.waitFor(()=>expect(host.textContent).toContain('Destination')));await click('Destination');await act(async()=>vi.waitFor(()=>expect(changed).toHaveBeenCalled()));expect(await db.notes.get(n.id)).toMatchObject({parentId:p.id,title:'Source'});});
+it('pauses a running timer when collapsed and keeps its green engaged status',async()=>{const n=newNote();await db.notes.put(n);await mount(<TimeTrackingPanel note={n}/>);await click('Открыть таймер');await act(async()=>vi.waitFor(()=>expect(host.querySelector('.timer-drawer.expanded')).not.toBeNull()));await click('Старт');await act(async()=>vi.waitFor(()=>expect(host.textContent).toContain('Пауза')));await click('Свернуть таймер');await act(async()=>vi.waitFor(async()=>expect((await getSessionsForNote(n.id))[0].status).toBe('paused')));expect(host.querySelector('.timer-status.engaged')).not.toBeNull();expect(host.querySelector('.timer-drawer.expanded')).toBeNull()});
+
+it('archives a card without unexpectedly opening its editor and archives descendants',async()=>{const n=newNote({title:'Archive me'}),child=newNote({parentId:n.id});await db.notes.bulkPut([n,child]);await mount(<MemoryRouter><App/></MemoryRouter>);await act(async()=>vi.waitFor(()=>expect([...host.querySelectorAll('h3')].some(e=>e.textContent?.includes('Archive me'))).toBe(true)));await act(async()=>{const card=[...host.querySelectorAll('article')].find(e=>e.textContent?.includes('Archive me'))!;(card.querySelectorAll('.hover-actions button')[2] as HTMLButtonElement).click();await new Promise(r=>setTimeout(r,30))});expect(host.querySelector('.editor')).toBeNull();expect((await db.notes.get(child.id))?.archivedAt).toBeGreaterThan(0)});

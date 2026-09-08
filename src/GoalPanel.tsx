@@ -1,14 +1,16 @@
-import { useEffect,useState } from 'react';import { db,type Note } from './data';import { calculateGoalMetrics,saveGoal } from './goalRepository';import { getSessionsForNote } from './trackingRepository';import { updateNoteFields } from './noteUpdateService';
-export default function GoalPanel({note,onChange}:{note:Note;onChange:(n:Note)=>void}){const [hours,setHours]=useState(note.goalDraftHours??(note.targetHours?String(note.targetHours):'')),[deadline,setDeadline]=useState(note.goalDraftDeadline??(note.deadline||'')),[metrics,setMetrics]=useState<ReturnType<typeof calculateGoalMetrics>>(),[open,setOpen]=useState(note.goalEnabled),[editing,setEditing]=useState(false);const goalSessions=async()=>{const all=await db.notes.toArray(),ids=new Set([note.id]);let changed=true;while(changed){changed=false;for(const n of all)if(n.parentId&&ids.has(n.parentId)&&!ids.has(n.id)){ids.add(n.id);changed=true}}return (await Promise.all([...ids].map(id=>getSessionsForNote(id)))).flat()};const load=async()=>{if(note.goalEnabled&&note.targetHours&&note.deadline&&note.goalStartDate){const sessions=await goalSessions(),goal={targetHours:note.targetHours,deadline:note.deadline,goalStartDate:note.goalStartDate,actualHoursAtGoalStart:note.actualHoursAtGoalStart};setMetrics(calculateGoalMetrics(goal,sessions));}};useEffect(()=>{load()},[note]);const saveDraft=async(nextHours=hours,nextDeadline=deadline)=>{if(!await db.notes.get(note.id))await db.notes.put(note);const draft=await updateNoteFields(note.id,{goalDraftHours:nextHours,goalDraftDeadline:nextDeadline});onChange(draft);const target=Number(nextHours),today=new Date().toISOString().slice(0,10);if(Number.isFinite(target)&&target>0&&(!nextDeadline||nextDeadline>=today)){const updated=await saveGoal(draft,target,nextDeadline||null,today);onChange(updated)}};const remove=async()=>{const saved=await updateNoteFields(note.id,{goalEnabled:false,targetHours:null,deadline:null,goalStartDate:null,actualHoursAtGoalStart:0,goalUpdatedAt:null,goalDraftHours:'',goalDraftDeadline:''});onChange(saved);setOpen(false)};if(!open)return <section className="goal-panel goal-collapsed"><button onClick={()=>setOpen(true)}>＋ Добавить цель</button></section>;return <section className="goal-panel"><div className="goal-head"><strong>Цель</strong>{note.goalEnabled&&<span className="goal-actions"><button className="goal-icon" aria-label="Изменить цель" title="Изменить цель" onClick={()=>setEditing(true)}>✎</button><button className="goal-icon" aria-label="Удалить цель" title="Удалить цель" onClick={remove}>🗑</button></span>}</div>{(!note.goalEnabled||editing)?<div className="goal-form"><input type="number" min="0.1" step="0.1" placeholder="Целевые часы" value={hours} onChange={e=>{const value=e.target.value;setHours(value);void saveDraft(value,deadline)}}/><input aria-label="Дата цели (необязательно)" type="date" value={deadline} onChange={e=>{const value=e.target.value;setDeadline(value);void saveDraft(hours,value)}}/><small className="goal-draft-note">Сохраняется автоматически</small><button onClick={()=>setEditing(false)}>Отмена</button></div>:<><div className="goal-metrics"><span>Цель <b>{note.targetHours} ч</b>{note.deadline?' до '+note.deadline:' · без даты'}</span>{metrics&&<><span>Учтено внутри <b>{metrics.actualHours.toFixed(1)} ч</b></span><span>Осталось <b>{metrics.remainingHours.toFixed(1)} ч</b></span>{note.deadline&&<span>Нужно в день <b>{metrics.requiredHoursPerDay.toFixed(1)} ч</b></span>}</>}</div></>}</section>}
-
-
-
-
-
-
-
-
-
-
-
-
+import {useRef,useState} from 'react';
+import {type Note} from './data';
+import {goalDraftFields,persistGoalDraft} from './goalDraftRepository';
+import {useTimePlan} from './TimeSummary';
+export default function GoalPanel({note,onChange}:{note:Note;onChange:(n:Note)=>void}){
+ const [open,setOpen]=useState(note.goalEnabled||note.goalDraftHours!==undefined||!!note.goalDraftDeadline),[error,setError]=useState('');
+ const latest=useRef(note);latest.current=note;
+ const metrics=useTimePlan().byId.get(note.id);
+ const hours=note.goalDraftHours??String(note.targetHours??''),date=note.goalDraftDeadline??note.deadline??'';
+ const change=(h:string,d:string)=>{const fields=goalDraftFields(latest.current,h,d),next={...latest.current,...fields};latest.current=next;onChange(next);void persistGoalDraft(next,fields).then(()=>setError('')).catch(()=>setError('Не удалось записать цель. Черновик сохранён для восстановления.'))};
+ if(!open)return <section className="goal-panel goal-collapsed"><button onClick={()=>setOpen(true)}>＋ Добавить цель</button>{metrics&&metrics.targetHours>0&&<small> Цели внутри: {metrics.targetHours.toFixed(1)} ч</small>}</section>;
+ return <section className="goal-panel"><div className="goal-head"><strong>Цель</strong><button className="goal-icon" aria-label="Удалить цель" onClick={()=>{change('','');setOpen(false)}}>×</button></div>
+ <div className="goal-form"><input aria-label="Целевые часы" inputMode="decimal" placeholder="Часы" value={hours} onChange={e=>change(e.target.value,date)}/><input aria-label="Дата цели (необязательно)" placeholder="ДД.ММ.ГГГГ — необязательно" value={date} onChange={e=>change(hours,e.target.value)}/></div>
+ <small className="goal-draft-note">{note.goalEnabled?'Сохраняется автоматически':'Черновик · можно заполнить позже'}</small>{error&&<p role="alert">{error}</p>}
+ {metrics&&metrics.targetHours>0&&<div className="goal-metrics"><span>Необходимо <b>{metrics.targetHours.toFixed(1)} ч</b></span><span>Осталось <b>{metrics.remainingHours.toFixed(1)} ч</b></span>{metrics.dailyHours!==undefined&&<span>Нужно в день <b>{metrics.dailyHours.toFixed(1)} ч</b></span>}</div>}</section>;
+}

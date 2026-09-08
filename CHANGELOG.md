@@ -135,3 +135,6 @@ Validation: 107/107 tests pass, lint/typecheck/build pass. New tests cover notes
 ## 2026-09-08 — Goal persistence in note editors
 
 Goal saves now propagate the updated note back to the parent editor state as well as IndexedDB. This prevents a later autosave from displaying stale goal fields and makes target hours/date immediately durable for ordinary notes and projects.
+
+## 2026-09-08 — regression audit
+Fixed incomplete goal drafts and concurrent autosave, shared nested daily planning, midnight timer allocation, workspace navigation, both move controls, inline drawings and compact previews, filled folder tabs and subtree lifecycle. Added 14 regression tests; all 121 tests pass. Details: docs/AUDIT-2026-09-08.md.

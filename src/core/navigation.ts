@@ -10,4 +10,4 @@ export const navigationItems=[
 ] as const;
 export const paths=Object.fromEntries(navigationItems.map(n=>[n.id,n.path])) as Record<View,string>;
 export const labels=Object.fromEntries(navigationItems.map(n=>[n.id,n.label])) as Record<View,string>;
-export const viewFor=(path:string):View=>navigationItems.find(n=>n.path===path)?.id??'all';
+export const viewFor=(path:string):View=>path.startsWith('/project/')?'projects':navigationItems.find(n=>n.path===path)?.id??'all';
