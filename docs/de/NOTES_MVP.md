@@ -59,3 +59,8 @@ Das Schloss neben Zeichnen setzt ein beliebiges nichtleeres Passwort ohne Länge
 ## Fotos und Papierkorb — 08.09.2026
 
 Mehrere Fotos können über das kompakte Bildsymbol eingefügt werden. Vorschauen öffnen die vollständige Ansicht. Das Papierkorb-Symbol verschiebt Fotos in den App-Papierkorb; dort können sie wiederhergestellt oder nach Bestätigung endgültig gelöscht werden. Geschützte Notizen verschlüsseln Fotos zusammen mit Text und Zeichnung.
+
+
+## Projekt und Notiz — 08.09.2026
+
+Die Oberfläche kennzeichnet Notizen als eigenständige Aufzeichnung und Projekte als Ordner für Notizen und Unterprojekte. Projektseiten zeigen den Bereich „Projektinhalt“ mit der Elementanzahl.

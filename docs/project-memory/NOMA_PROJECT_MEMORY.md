@@ -185,3 +185,8 @@ Notes and projects accept multiple local image files through the compact photo b
 Photos are stored as data URLs with name, MIME type, dimensions and timestamps. Note updates, autosave, revisions and workspace JSON carry photo metadata. Protected notes encrypt photos with the same AES-GCM envelope as title, content and drawings. Photo trash does not delete the parent note or tracking history. Old notes without photos remain compatible.
 
 Validation: 105/105 tests pass, including photo trash restore/purge, encrypted photos and backup round trip. Browser checks covered the Add photo control and photo preview rendering.
+
+
+## 2026-09-08 — Project versus note clarity
+
+The UI now explains the distinction everywhere it matters: a note is labelled “Заметка · запись” and a project “Проект · папка”. Project pages include an explainer that projects contain notes and subprojects, plus a “Содержимое проекта” section with its item count. Children are labelled “Заметка” or “Подпроект”. The data model remains compatible: both are Note records and isProject controls the container behavior, preserving the future plugin/content-block boundary.
