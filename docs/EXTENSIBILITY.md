@@ -12,3 +12,6 @@ The architecture follows the separation used by WordPress: core owns data and ap
 Introduce versioned actions (notifications after committed operations), filters (validated transformations), command registration, navigation/view slots, templates and blocks. Keep storage and migrations under core control; extensions must not write directly to Dexie tables. Theme packages must not implement persistence or timer logic. Define permissions, sandbox boundaries and lifecycle activation/deactivation before loading third-party code. Deactivation must preserve user content and extension metadata. Additive namespaced metadata needs an explicit backup/import contract before plugins use it.
 
 This document is a design boundary, not a promise of an available WordPress-compatible API.
+
+
+Drawing is the first self-contained content feature: src/drawing/model.ts contains the versioned vector data and pure geometry, DrawingEditor.tsx the UI, and drawing.css the themed controls. Persistence uses the existing note service rather than a separate drawing database; backup and revision contracts include drawing data. This is a core feature today, with module boundaries suitable for a future content-block API.

@@ -44,3 +44,8 @@ Notizen werden bei Änderungen automatisch gespeichert. Karten lassen sich anhef
 ## Timer — 08.09.2026
 
 Der kleine Indikator bleibt bei laufender und pausierter Sitzung grün gefüllt. Gesamtzeit zurücksetzen steht unter der Summe und erhält Verlauf, Ziel-Fortschritt und heutige Zeit. Timer zurücksetzen befindet sich im Pomodoro-Menü.
+
+
+## Zeichnen — 08.09.2026
+
+Das Stift-Symbol unten öffnet die Zeichenfläche: Bleistift, Stift, Marker, Radierer für ganze Striche, Farbe, Breite sowie Rückgängig/Wiederholen. Zeichnungen werden automatisch gespeichert und in Vorschauen, Versionsverlauf und Backups berücksichtigt.

@@ -160,3 +160,10 @@ The reset command belongs to trackingRepository; the UI invokes it and theme CSS
 
 
 2026-09-08: User requested English author credit. Added “Made by Albert D.” to the shared application shell, bottom-right, styled through theme text color.
+
+
+## 2026-09-08 — Drawing in notes
+
+Added a minimal pen-in-circle action at the bottom of note editors, including project notes. The separate drawing editor provides pencil, pen, translucent marker, stroke eraser, color and width controls, undo/redo and Done. Mouse, touch and pen use Pointer Events. Vector strokes autosave through the existing note service during drawing and at stroke completion; previews appear in notes, cards and revision history. Drawing data round-trips through workspace backup/import. Old notes without drawing fields remain compatible.
+
+The versioned drawing model and geometric operations live in src/drawing/model.ts; UI and theme styling are separate. No plugin runtime is introduced. Eraser removes a whole touched stroke and can be undone; pressure-sensitive brushes and standalone image export are outside this increment. Browser checked pen/marker strokes, undo/redo, eraser and reload recovery. Tests: 92/92.

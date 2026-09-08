@@ -1,0 +1,14 @@
+import 'fake-indexeddb/auto';
+import {beforeEach,expect,it} from 'vitest';
+import {db,newNote} from '../data';
+import {saveDraft} from '../noteEditing';
+import {getRevisions,restoreRevision} from '../noteRevisionRepository';
+import {exportWorkspace,importWorkspace} from '../workspaceRepository';
+import {emptyDrawing,eraseAt,pathFor,type Stroke} from './model';
+const stroke:Stroke={id:'s',tool:'pen',color:'#252525',width:4,opacity:1,points:[{x:10,y:20},{x:110,y:20}]};
+beforeEach(async()=>{await db.notes.clear();await db.noteRevisions.clear();await db.trackingSessions.clear()});
+it('erases a crossing stroke between sampled points and keeps other strokes',()=>{const other={...stroke,id:'other',points:[{x:300,y:300}]};const d={...emptyDrawing(),strokes:[stroke,other]};const erased=eraseAt(d,{x:60,y:22},4);expect(erased.strokes.map(s=>s.id)).toEqual(['other']);expect(d.strokes).toHaveLength(2)});
+it('supports erasing single-point dots and serializes vector paths',()=>{expect(eraseAt({...emptyDrawing(),strokes:[{...stroke,points:[{x:10,y:20}]}]},{x:10,y:20},2).strokes).toHaveLength(0);expect(pathFor(stroke.points)).toBe('M10.00 20.00 L110.00 20.00')});
+it('autosaves drawings alongside text without overwriting timer settings',async()=>{const note=newNote({title:'Sketch'});await db.notes.put(note);await db.notes.update(note.id,{trackTime:true});const drawing={...emptyDrawing(),strokes:[stroke]};await saveDraft({...note,drawing});await saveDraft({...note,drawing,content:'Caption'});expect(await db.notes.get(note.id)).toMatchObject({drawing,content:'Caption',trackTime:true})});
+it('restores drawings through note version history',async()=>{const drawing={...emptyDrawing(),strokes:[stroke]},note=newNote({drawing});await db.notes.put(note);await saveDraft({...note,drawing:emptyDrawing()});const revisions=await getRevisions(note.id);expect(revisions[0].snapshot.drawing).toEqual(drawing);await restoreRevision(note.id,revisions[0].id);expect((await db.notes.get(note.id))?.drawing).toEqual(drawing)});
+it('preserves editable drawing data through backup and import',async()=>{const drawing={...emptyDrawing(),strokes:[stroke]},note=newNote({drawing});await db.notes.put(note);const backup=await exportWorkspace();await importWorkspace(JSON.stringify(backup));expect((await db.notes.get(note.id))?.drawing).toEqual(drawing)});

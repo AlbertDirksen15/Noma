@@ -5,7 +5,7 @@ let queue=Promise.resolve();
 function readPending():Record<string,Note>{try{return JSON.parse(localStorage.getItem(key)||'{}')}catch{return {}}}
 const pending=readPending();
 function journal(){try{localStorage.setItem(key,JSON.stringify(pending))}catch{ /* IndexedDB remains the primary store if the recovery journal is unavailable. */ }}
-const fields=(n:Note)=>({title:n.title,content:n.content,color:n.color,inToday:n.inToday,inInbox:n.inInbox,pinned:n.pinned,sortOrder:n.sortOrder});
+const fields=(n:Note)=>({drawing:n.drawing,title:n.title,content:n.content,color:n.color,inToday:n.inToday,inInbox:n.inInbox,pinned:n.pinned,sortOrder:n.sortOrder});
 export function saveDraft(note:Note){
  pending[note.id]=note; journal();
  const task=queue.then(async()=>{const saved=await db.transaction('rw',db.notes,db.noteRevisions,async()=>await db.notes.get(note.id)?await updateNoteFields(note.id,fields(note)):await db.notes.put(note).then(()=>note));if(pending[note.id]===note){delete pending[note.id];journal()}return saved});
