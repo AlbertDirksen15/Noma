@@ -39,3 +39,8 @@ Daten liegen in IndexedDB im Browserprofil, nicht im Portable-Ordner. Ein andere
 ## 2026-09-08
 
 Notizen werden bei Änderungen automatisch gespeichert. Karten lassen sich anheften und innerhalb ihrer Gruppe per Ziehen sortieren. Heute enthält zwei angeheftete Standardnotizen. Zeitziele benötigen kein Datum. Das Einklappen pausiert den Timer; Zurücksetzen erhält die erfasste Zeit. Projekte werden über die Seitenleiste erstellt. Theme-Variablen und Core-Dienste bereiten die spätere Trennung von Plugins und Themes vor; siehe ../EXTENSIBILITY.md.
+
+
+## Timer — 08.09.2026
+
+Der kleine Indikator bleibt bei laufender und pausierter Sitzung grün gefüllt. Gesamtzeit zurücksetzen steht unter der Summe und erhält Verlauf, Ziel-Fortschritt und heutige Zeit. Timer zurücksetzen befindet sich im Pomodoro-Menü.

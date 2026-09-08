@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db, newNote } from './data';
-import { addManualEntry, deleteManualEntry, elapsed, getActiveSession, getSessionsForNote, getTotalTrackedTime, pauseTracking, resumeTracking, setTrackingEnabled, startTracking, stopActiveForNote, stopTracking } from './trackingRepository';
+import { addManualEntry, deleteManualEntry, elapsed, getActiveSession, getSessionsForNote, getTotalTrackedTime, pauseTracking, resumeTracking, resetTotalTrackedTime, setTrackingEnabled, startTracking, stopActiveForNote, stopTracking } from './trackingRepository';
 import { archiveNote, trashNote } from './noteRepository';
 
 let tick=1000; const clock=()=>tick;
@@ -17,4 +17,11 @@ describe('time tracking',()=>{
  it('cannot keep an active timer on archived or trashed notes',async()=>{const n=await note();await startTracking(n.id,clock);await db.notes.put({...n,archivedAt:2000});await stopActiveForNote(n.id,clock);expect((await getActiveSession())).toBeUndefined()});
  it('archive and trash services stop an active timer',async()=>{const a=await note();await startTracking(a.id,clock);await archiveNote(a);expect(await getActiveSession()).toBeUndefined();const b=await note();await startTracking(b.id,clock);await trashNote(b);expect(await getActiveSession()).toBeUndefined()});
  it('preserves sessions when note is moved and restored',async()=>{const n=await note();await setTrackingEnabled(n.id,true);const s=await addManualEntry(n.id,60000,5000,'',clock);const enabled=(await db.notes.get(n.id))!;await db.notes.put({...enabled,parentId:'project'});expect((await getSessionsForNote(n.id))[0].id).toBe(s.id);expect((await db.notes.get(n.id))!.trackTime).toBe(true)});
+});
+
+describe('reset displayed total',()=>{
+ it('preserves session history, goals and totals of other notes',async()=>{const n=await note(),other=await note();await db.notes.update(n.id,{targetHours:10,goalEnabled:true});const entry=await addManualEntry(n.id,60000,1000,'keep',clock);await addManualEntry(other.id,30000,1000,'',clock);await resetTotalTrackedTime(n.id,clock);expect(await getTotalTrackedTime(n.id,clock)).toBe(0);expect(await getTotalTrackedTime(other.id,clock)).toBe(30000);expect(await db.trackingSessions.get(entry.id)).toMatchObject({durationMs:60000,comment:'keep',totalExcludedMs:60000});expect(await db.notes.get(n.id)).toMatchObject({targetHours:10,goalEnabled:true});await addManualEntry(n.id,5000,1000,'',clock);expect(await getTotalTrackedTime(n.id,clock)).toBe(5000)});
+ it('counts only time after reset while a running timer keeps running',async()=>{const n=await note(),session=await startTracking(n.id,clock);tick+=60000;await resetTotalTrackedTime(n.id,clock);expect(await getTotalTrackedTime(n.id,clock)).toBe(0);expect((await getActiveSession())?.id).toBe(session.id);tick+=2000;expect(await getTotalTrackedTime(n.id,clock)).toBe(2000);await stopTracking(session.id,clock);expect(await getTotalTrackedTime(n.id,clock)).toBe(2000);expect((await db.trackingSessions.get(session.id))?.durationMs).toBe(62000)});
+ it('keeps paused timers paused and supports repeated resets',async()=>{const n=await note(),session=await startTracking(n.id,clock);tick+=9000;await pauseTracking(session.id,clock);await resetTotalTrackedTime(n.id,clock);tick+=5000;expect(await getTotalTrackedTime(n.id,clock)).toBe(0);expect((await db.trackingSessions.get(session.id))?.status).toBe('paused');await resumeTracking(session.id,clock);tick+=2000;expect(await getTotalTrackedTime(n.id,clock)).toBe(2000);await resetTotalTrackedTime(n.id,clock);tick+=1000;expect(await getTotalTrackedTime(n.id,clock)).toBe(1000)});
+ it('deleting an old manual entry does not subtract newly counted time',async()=>{const n=await note();const old=await addManualEntry(n.id,60000,1000,'',clock);await resetTotalTrackedTime(n.id,clock);await addManualEntry(n.id,5000,1000,'',clock);await deleteManualEntry(old.id);expect(await getTotalTrackedTime(n.id,clock)).toBe(5000)});
 });

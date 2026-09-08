@@ -42,3 +42,10 @@ Checks: npm run lint, npm run typecheck, npm test, npm run build, npm run build:
 ## 2026-09-08
 
 Notes save automatically as you type. Pin cards and drag them to reorder within pinned or unpinned groups. Today includes Current tasks and Recurring tasks. Goals may omit a date. Collapsing the timer pauses it; Reset preserves tracked history. Project creation is in the sidebar. Theme tokens and core services prepare future plugin/theme separation; see ../EXTENSIBILITY.md.
+
+
+## 2026-09-08 — Timer controls refinement
+
+The small drawer indicator is filled green for both running and paused open sessions; collapse still pauses tracking. Reset total time is directly below Total. It resets the displayed counter using per-session totalExcludedMs metadata, preserving history, goal progress, today totals and timer state. Reset timer moved into the Pomodoro dots menu alongside a separately labelled Reset Pomodoro. The expanded drawer allows the settings menu to remain fully visible.
+
+The reset command belongs to trackingRepository; the UI invokes it and theme CSS owns indicator styling. Existing backups remain compatible: omitted totalExcludedMs means zero; exports preserve reset metadata. Validation: lint/typecheck/build pass, 87 tests pass; browser verifies green paused indicator, total reset and timer reset from the menu.

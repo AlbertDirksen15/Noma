@@ -17,6 +17,13 @@ export const resumeTracking=async(id:string, clock:Clock=now)=>{const s=await db
 export const stopTracking=async(id:string, clock:Clock=now)=>{await reconcilePomodoro(clock());const s=await db.trackingSessions.get(id);if(!s||s.status==='completed')return s;const duration=elapsed(s,clock);const t=clock();const updated={...s,durationMs:duration,startedAt:null,endedAt:t,status:'completed' as const,updatedAt:t,pomodoro:s.pomodoro?stopPomodoro(s.pomodoro):undefined};await db.trackingSessions.put(updated);return updated};
 export const addManualEntry=async(noteId:string,durationMs:number,date:number=Date.now(),comment='',clock:Clock=now)=>{if(durationMs<=0)throw new Error('Длительность должна быть больше нуля');const t=clock();const s:TrackingSession={id:crypto.randomUUID(),noteId,startedAt:null,endedAt:null,durationMs,status:'completed',createdAt:t,updatedAt:t,manual:true,date,comment};await db.trackingSessions.add(s);return s};
 export const deleteManualEntry=async(id:string)=>{const s=await db.trackingSessions.get(id);if(!s||!s.manual)throw new Error('Удалять можно только ручной замер');await db.transaction('rw',db.trackingSessions,db.tombstones,async()=>{await createTombstone('trackingSession',id);await db.trackingSessions.delete(id)})};
-export const getTotalTrackedTime=async(noteId:string)=>{const sessions=await getSessionsForNote(noteId);return sessions.reduce((sum,s)=>sum+elapsed(s),0)};
+/** The displayed total is a counter; resetting it never destroys session history or goal progress. */
+export const totalTrackedTime=(sessions:TrackingSession[],clock:Clock=now)=>sessions.reduce((sum,session)=>sum+Math.max(0,elapsed(session,clock)-(session.totalExcludedMs??0)),0);
+export const getTotalTrackedTime=async(noteId:string,clock:Clock=now)=>totalTrackedTime(await getSessionsForNote(noteId),clock);
+export const resetTotalTrackedTime=async(noteId:string,clock:Clock=now)=>db.transaction('rw',db.notes,db.trackingSessions,async()=>{
+ if(!await db.notes.get(noteId))throw new Error('Заметка не найдена');
+ const sessions=await getSessionsForNote(noteId),resetAt=clock();
+ for(const session of sessions)await db.trackingSessions.update(session.id,{totalExcludedMs:elapsed(session,()=>resetAt),updatedAt:resetAt});
+});
 export const stopActiveForNote=async(noteId:string,clock:Clock=now)=>{const s=await db.trackingSessions.where('noteId').equals(noteId).and(x=>x.status==='running').first();if(s)await stopTracking(s.id,clock)};
 export const stopActiveForSubtree=async(noteIds:string[],clock:Clock=now)=>{for(const id of noteIds)await stopActiveForNote(id,clock)};
