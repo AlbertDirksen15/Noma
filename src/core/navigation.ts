@@ -1,7 +1,8 @@
 /** Core navigation metadata. Future extensions can contribute entries through a versioned API. */
-export type View='all'|'today'|'inbox'|'archive'|'trash';
+export type View='all'|'projects'|'today'|'inbox'|'archive'|'trash';
 export const navigationItems=[
  {id:'all',path:'/',label:'Все заметки'},
+ {id:'projects',path:'/projects',label:'Все проекты'},
  {id:'today',path:'/today',label:'План на сегодня'},
  {id:'inbox',path:'/inbox',label:'На обработку'},
  {id:'archive',path:'/archive',label:'Архив'},
