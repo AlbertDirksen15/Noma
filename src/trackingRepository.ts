@@ -27,3 +27,5 @@ export const resetTotalTrackedTime=async(noteId:string,clock:Clock=now)=>db.tran
 });
 export const stopActiveForNote=async(noteId:string,clock:Clock=now)=>{const s=await db.trackingSessions.where('noteId').equals(noteId).and(x=>x.status==='running').first();if(s)await stopTracking(s.id,clock)};
 export const stopActiveForSubtree=async(noteIds:string[],clock:Clock=now)=>{for(const id of noteIds)await stopActiveForNote(id,clock)};
+
+export const totalTrackedTimeForDate=(sessions:TrackingSession[],date=new Date(),clock:Clock=now)=>{const start=new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime();const end=start+86400000;return sessions.filter(s=>s.date>=start&&s.date<end).reduce((sum,s)=>sum+Math.max(0,elapsed(s,clock)-(s.totalExcludedMs??0)),0)};
