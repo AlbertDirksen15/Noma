@@ -8,7 +8,7 @@ const fmt=(ms:number)=>{const mins=Math.floor(ms/60000),hours=Math.floor(mins/60
 
 export function WorkspaceTimeSummary(){
  const [today,setToday]=useState(0),[total,setTotal]=useState(0);
- useEffect(()=>{let alive=true;const load=async()=>{const sessions=await db.trackingSessions.toArray();if(!alive)return;setTotal(sessions.reduce((sum,s)=>sum+Math.max(0,elapsed(s)-(s.totalExcludedMs??0)),0));setToday(totalTrackedTimeForDate(sessions))};void load();const id=window.setInterval(()=>void load(),1000);return()=>{alive=false;window.clearInterval(id)}},[]);
+ useEffect(()=>{let alive=true;const load=async()=>{const notes=await db.notes.toArray(),activeIds=new Set(notes.filter(note=>!note.deletedAt&&!note.archivedAt).map(note=>note.id)),sessions=(await db.trackingSessions.toArray()).filter(session=>activeIds.has(session.noteId));if(!alive)return;setTotal(sessions.reduce((sum,s)=>sum+Math.max(0,elapsed(s)-(s.totalExcludedMs??0)),0));setToday(totalTrackedTimeForDate(sessions))};void load();const id=window.setInterval(()=>void load(),1000);return()=>{alive=false;window.clearInterval(id)}},[]);
  return <div className="workspace-time" aria-label="Общее время"><span>Сегодня <b>{fmt(today)}</b></span><span>Всего <b>{fmt(total)}</b></span></div>;
 }
 
