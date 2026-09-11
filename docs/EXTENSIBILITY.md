@@ -7,6 +7,7 @@ The architecture follows the separation used by WordPress: core owns data and ap
 - Core navigation metadata lives in src/core/navigation.ts, independently from icon rendering.
 - src/themes/default.css defines semantic CSS tokens for surfaces, text, accent, note colors and timer states. Themes can override these tokens without changing persistence.
 - New optional pinned and sortOrder fields preserve compatibility with existing local notes.
+- Noma supports named UI extension points / plugin slots. The first canonical slot is `timer.right.collapsed`, located in the unused right-side area of the timer module when the goal editor is collapsed. Empty slots render no visible UI; the slot name and semantics are part of the public UI architecture.
 
 ## Future contracts
 Introduce versioned actions (notifications after committed operations), filters (validated transformations), command registration, navigation/view slots, templates and blocks. Keep storage and migrations under core control; extensions must not write directly to Dexie tables. Theme packages must not implement persistence or timer logic. Define permissions, sandbox boundaries and lifecycle activation/deactivation before loading third-party code. Deactivation must preserve user content and extension metadata. Additive namespaced metadata needs an explicit backup/import contract before plugins use it.

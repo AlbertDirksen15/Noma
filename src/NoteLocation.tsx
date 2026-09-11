@@ -4,8 +4,9 @@ import {useNavigate} from 'react-router-dom';
 import {db,type Note} from './data';
 import {saveDraft,flushDrafts} from './noteEditing';
 import {getAncestors,getDescendants,moveNote} from './treeRepository';
-export function NoteBreadcrumbs({note}:{note:Note}){
- const [crumbs,setCrumbs]=useState<Note[]>([]),navigate=useNavigate();
+export function NoteBreadcrumbs({note,onNavigate}:{note:Note;onNavigate?:(path:string)=>void}){
+ const [crumbs,setCrumbs]=useState<Note[]>([]),routeNavigate=useNavigate();
+ const navigate=onNavigate??routeNavigate;
  useEffect(()=>{const sub=liveQuery(()=>getAncestors(note.id)).subscribe(setCrumbs);return()=>sub.unsubscribe()},[note.id,note.parentId]);
  return <nav className="breadcrumbs" aria-label="Расположение"><button onClick={()=>navigate(note.isProject?'/projects':'/')}>{note.isProject?'Все проекты':'Все заметки'}</button>{crumbs.map(n=><span key={n.id}><span aria-hidden="true">/</span><button onClick={()=>navigate((n.isProject?'/project/':'/note/')+n.id)}>{n.title||'Без названия'}</button></span>)}<span aria-current="page">{note.title||'Без названия'}</span></nav>;
 }

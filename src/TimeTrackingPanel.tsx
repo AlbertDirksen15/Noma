@@ -50,6 +50,45 @@ export function TimeTrackingPanel({note,compact=false,onNoteChange}:{note:Note;c
  const resetPomo=async()=>{await ensureSaved();await configurePomodoro(note.id,pomodoro.durationMs/60000);await load();setPomoMenu(false)};
  const newPomoCycle=async()=>{if(!current)return;await startNewPomodoroCycle(current.id);await load();setPomoMenu(false)};
  const pomoDone=pomodoro.status==='work-complete';
- const showCompactStats=enabled||note.isProject||note.goalEnabled;
- return <><section className={'tracking-panel '+(compact?'compact':'')}><div className="tracking-summary-row"><button className="timer-drawer-toggle" aria-label={enabled?'Свернуть таймер':'Открыть таймер'} aria-expanded={enabled} onClick={()=>void enable(!enabled)}><Menu size={20}/><span role="img" aria-label={running?'Таймер работает':current?'Таймер на паузе':'Таймер остановлен'} className={'timer-status '+(current?'engaged':'stopped')}/></button>{showCompactStats&&<div className="tracking-stats tracking-stats-compact"><div className="tracking-total"><strong>Всего: {totalFormat(plan?.totalMs??total)}</strong><button className="reset-total" disabled={resetPending} title="Обнулить общий счётчик; история замеров и прогресс цели сохраняются" onClick={()=>void resetTotal()}>Сбросить общее время</button></div>{trackingError&&<span role="alert">{trackingError}</span>}<strong>Сделано сегодня: {totalFormat(plan?.todayMs??todayTotal)}</strong>{(note.isProject||targetHours>0)&&<strong className="tracking-needed-today">Нужно в день: {dailyLabel}</strong>}<NoteTimeBadge note={note} showTime={false}/></div>}</div><div className={'timer-drawer '+(enabled?'expanded':'')} inert={!enabled}><div className="timer-drawer-inner"><div className="tracking-head"><div className="tracking-left"><div className="tracking-timer-row"><div className="tracking-clock">{current?format(elapsed(current)):format(0)}</div><div className="pomodoro-wrap"><PomodoroCircle state={pomodoro} onClick={openMenu}/><button className="pomodoro-menu-button" aria-label="Меню Pomodoro" onClick={openMenu}><MoreHorizontal size={16}/></button>{pomoMenu&&<div className="pomodoro-menu"><p>Start запускает рабочий интервал. Зелёное кольцо означает его завершение.</p><label>Рабочий интервал <input type="number" min="1" value={pomoMinutes} onChange={e=>setPomoMinutes(e.target.value)}/> мин</label><button onClick={savePomoMinutes}>Сохранить</button><button onClick={resetPomo}>Сбросить Pomodoro</button><button onClick={async()=>{await stop();await resetPomo()}}>Сбросить таймер</button>{pomoDone&&running&&<button onClick={newPomoCycle}>Новый цикл</button>}</div>}</div></div></div></div><div className="tracking-controls"><button onClick={toggle}>{running?'Пауза':current?.status==='paused'?'Продолжить':'Старт'}</button>{current&&<button onClick={stop}>Завершить</button>}<button onClick={()=>setManualOpen(true)}>+ Добавить замер</button></div>{manualOpen&&<div className="manual-entry"><input type="number" min="1" placeholder="Минуты" value={minutes} onChange={e=>setMinutes(e.target.value)}/><input placeholder="Комментарий (необязательно)" value={comment} onChange={e=>setComment(e.target.value)}/><button onClick={manual}>Добавить</button><button onClick={()=>setManualOpen(false)}>Отмена</button></div>}<GoalPanel note={note} onChange={n=>{setGoalNote(n);onNoteChange?.(n)}}/></div></div></section></>}
+ // Compact metrics stay visible while the drawer is collapsed for both notes and projects.
+ const showCompactStats=true;
+ const remainingLabel=plan?.remainingHours===undefined?'0.0 ч':`${plan.remainingHours.toFixed(1)} ч`;
+ const timerDrawer=(
+  <div className={'timer-drawer '+(enabled?'expanded':'')} inert={!enabled}>
+   <div className="timer-drawer-inner">
+    <div className="tracking-head">
+     <div className="tracking-left">
+      <div className="tracking-timer-row">
+       <div className="tracking-clock">{current?format(elapsed(current)):format(0)}</div>
+       <div className="pomodoro-wrap">
+        <PomodoroCircle state={pomodoro} onClick={openMenu}/>
+        <button className="pomodoro-menu-button" aria-label="Меню Pomodoro" onClick={openMenu}><MoreHorizontal size={16}/></button>
+        {pomoMenu&&<div className="pomodoro-menu">
+         <p>Start запускает рабочий интервал. Зелёное кольцо означает его завершение.</p>
+         <label>Рабочий интервал <input type="number" min="1" value={pomoMinutes} onChange={e=>setPomoMinutes(e.target.value)}/> мин</label>
+         <button onClick={savePomoMinutes}>Сохранить</button>
+         <button onClick={resetPomo}>Сбросить Pomodoro</button>
+         <button onClick={async()=>{await stop();await resetPomo()}}>Сбросить таймер</button>
+         {pomoDone&&running&&<button onClick={newPomoCycle}>Новый цикл</button>}
+        </div>}
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div className="tracking-controls">
+    <button onClick={toggle}>{running?'Пауза':current?.status==='paused'?'Продолжить':'Старт'}</button>
+    {current&&<button onClick={stop}>Завершить</button>}
+    <button onClick={()=>setManualOpen(true)}>+ Добавить замер</button>
+   </div>
+   {manualOpen&&<div className="manual-entry">
+    <input type="number" min="1" placeholder="Минуты" value={minutes} onChange={e=>setMinutes(e.target.value)}/>
+    <input placeholder="Комментарий (необязательно)" value={comment} onChange={e=>setComment(e.target.value)}/>
+    <button onClick={manual}>Добавить</button>
+    <button onClick={()=>setManualOpen(false)}>Отмена</button>
+   </div>}
+   {!compact&&<GoalPanel note={note} onChange={n=>{setGoalNote(n);onNoteChange?.(n)}}/>}
+  </div>
+ );
+ return <><section className={'tracking-panel '+(compact?'compact':'')}><div className="tracking-summary-row"><button className="timer-drawer-toggle" aria-label={enabled?'Свернуть таймер':'Открыть таймер'} aria-expanded={enabled} onClick={()=>void enable(!enabled)}><Menu size={20}/><span role="img" aria-label={running?'Таймер работает':current?'Таймер на паузе':'Таймер остановлен'} className={'timer-status '+(current?'engaged':'stopped')}/></button>{showCompactStats&&<div className="tracking-stats tracking-stats-compact"><div className="tracking-total"><strong>Всего: {totalFormat(plan?.totalMs??total)}</strong><button className="reset-total" disabled={resetPending} title="Обнулить общий счётчик; история замеров и прогресс цели сохраняются" onClick={()=>void resetTotal()}>Сбросить общее время</button></div>{trackingError&&<span role="alert">{trackingError}</span>}<strong>Сделано сегодня: {totalFormat(plan?.todayMs??todayTotal)}</strong><strong className="tracking-needed-today">Нужно в день: {dailyLabel}</strong>{compact&&<strong className="tracking-remaining">Осталось: {remainingLabel}</strong>}<NoteTimeBadge note={note} showTime={false}/></div>}</div>{compact?<div className="tracking-body"><div className="tracking-timer-side">{timerDrawer}</div><div className="tracking-goal-side"><GoalPanel note={note} onChange={n=>{setGoalNote(n);onNoteChange?.(n)}}/></div></div>:timerDrawer}</section></>}
 export function ActiveTimerIndicator(){const [session,setSession]=useState<TrackingSession>();const [note,setNote]=useState<Note>();const [,refresh]=useState(0);const load=async()=>{await reconcilePomodoro();const s=await getActiveSession();setSession(s);setNote(s?await db.notes.get(s.noteId):undefined)};useEffect(()=>{load();const id=window.setInterval(()=>{load();refresh(x=>x+1)},1000);return()=>window.clearInterval(id)},[]);if(!session||!note)return null;return <button className="active-timer" onClick={()=>pauseTracking(session.id).then(load)}>● {note.title||'Трек'} {format(elapsed(session))}</button>}

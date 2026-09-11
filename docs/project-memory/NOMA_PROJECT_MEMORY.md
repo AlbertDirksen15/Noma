@@ -24,6 +24,8 @@ The current Windows portable design includes `Noma.exe`, `runtime/node.exe`, the
 
 The architecture is prepared for WordPress-inspired extension boundaries: core owns data and behavior, themes own presentation, and future plugins will use documented contracts. There is no plugin runtime or public plugin SDK yet.
 
+The canonical recovery file is `docs/project-memory/NOMA_ASSISTANT_HANDOFF_PROMPT.md`. At the beginning of a new assistant context, the user should send it to the chat assistant before Noma work begins. This file is protected project-memory infrastructure and must not be deleted, renamed, moved or replaced with an outdated version without explicit permission.
+
 ## 2. COMPLETED
 
 ### Notes and workspace
@@ -62,8 +64,7 @@ The architecture is prepared for WordPress-inspired extension boundaries: core o
 - Reset Total changes the displayed counter without deleting tracking history or goal progress.
 - The timer drawer pauses a running session when collapsed.
 - A small status circle shows an engaged running or paused session.
-- A note without a goal shows no compact goal/time block while its timer is collapsed.
-- A goal note shows Total, Today and Required per day while the timer is collapsed.
+- The compact timer summary keeps Total, Today, Required per day and Remaining visible while collapsed.
 - A project always shows its compact aggregated time summary.
 - Pomodoro has a progress ring, configurable duration and separate reset controls.
 - Reset Timer is inside the Pomodoro options menu.
@@ -109,6 +110,7 @@ The architecture is prepared for WordPress-inspired extension boundaries: core o
 - Default theme tokens live separately from application logic.
 - Navigation metadata and project-card styling have dedicated core modules.
 - Drawing, photos, protection, tracking, goals, tree operations and backup use separate service boundaries suitable for future extension contracts.
+- Noma supports named UI extension points / plugin slots. The first slot is `timer.right.collapsed`, located in the unused right-side area of the timer module when goal input fields are collapsed. Empty slots render no visible UI.
 
 ## 3. IN PROGRESS
 

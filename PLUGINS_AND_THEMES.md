@@ -25,6 +25,17 @@ Initial examples include `note.created`, `note.saved`, `project.opened` and a
 card-title filter. Permission prompts will be required before a plugin can
 read workspace data, use the network or store its own data.
 
+## Named UI extension points
+
+Noma supports named UI extension points (plugin slots). The first canonical slot
+is `timer.right.collapsed`. It is located in the unused right-side area of the
+timer module when the goal editor is collapsed. Empty slots render no visible
+UI. The name and semantics are part of the protected public UI architecture.
+
+Core owns data and business behavior. Plugins must use documented contracts and
+must not directly change Core persistence. A full plugin runtime and public SDK
+are not implemented yet.
+
 ## Publishing
 
 Anyone may distribute a theme or plugin independently. A future official Noma

@@ -1,0 +1,55 @@
+.note-modal-overlay{background:rgb(52 47 27 / 16%);padding:24px}
+.note-editor-modal{width:min(656px,100%);height:min(820px,calc(100dvh - 48px));max-height:calc(100dvh - 48px);padding:28px 30px 22px;border-radius:18px;box-shadow:0 22px 70px #302d342b}
+.note-editor-modal .editor-scroll{margin-right:-19px;padding-right:19px;scrollbar-width:thin;scrollbar-color:#c7c7c3 transparent}
+.note-modal-heading{display:flex;align-items:flex-start;gap:18px;margin-bottom:20px}
+.note-modal-heading .breadcrumbs{flex:1;min-width:0;margin:0;gap:7px;line-height:1.6}
+.note-modal-heading .breadcrumbs button{background:transparent;padding:4px 0;border-radius:0;color:#51586d}
+.note-modal-heading .breadcrumbs>span{display:inline-flex;align-items:center;gap:7px}
+.note-modal-heading .breadcrumbs [aria-current]{padding:4px 0;color:#51586d;opacity:1}
+.note-modal-heading .breadcrumbs [aria-current]::before{content:'/';margin-right:7px;color:#8b8c94}
+.note-modal-pin{flex-shrink:0;padding:4px;color:var(--noma-text);margin:0}
+.note-editor-modal .title-input{font-size:28px;line-height:1.25;margin:22px 0 20px;padding:0;letter-spacing:-.4px}
+.note-editor-modal textarea{min-height:180px;font-size:17px;line-height:1.65;padding:0;margin-bottom:18px;box-shadow:none;border:0;outline:0}
+.note-editor-modal .tracking-panel{max-width:none;margin:0 0 12px}
+.note-editor-modal .tracking-panel.compact{height:auto;overflow:visible}
+.note-editor-modal .tracking-panel.compact:has(.timer-drawer.expanded){height:240px;overflow:hidden}
+.note-editor-modal .tracking-panel.compact:has(.timer-drawer:not(.expanded)){border-color:var(--noma-border);background:var(--noma-surface);padding:16px;margin:0 0 12px}
+.note-editor-modal .tracking-panel.compact:has(.timer-drawer:not(.expanded)) .tracking-body{display:none}
+.note-editor-modal .tracking-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,.9fr);gap:18px;height:calc(100% - 34px);min-height:0}
+.note-editor-modal .tracking-timer-side,.note-editor-modal .tracking-goal-side{min-width:0;min-height:0;overflow:hidden}
+.note-editor-modal .tracking-timer-side .timer-drawer{height:100%}
+.note-editor-modal .tracking-timer-side .timer-drawer.expanded{display:block;grid-template-rows:none}
+.note-editor-modal .tracking-timer-side .timer-drawer.expanded .timer-drawer-inner{overflow:visible}
+.note-editor-modal .tracking-goal-side .goal-panel{height:100%;max-width:none;margin:0;padding:4px 2px;overflow:hidden;border:0;background:transparent}
+.note-editor-modal .tracking-goal-side .goal-head{gap:6px}
+.note-editor-modal .tracking-goal-side .goal-form{gap:6px}
+.note-editor-modal .tracking-goal-side .goal-form input{width:100%;min-width:0}
+.note-editor-modal .tracking-goal-side .goal-save-row{justify-content:flex-end}
+.note-editor-modal .tracking-goal-side .goal-metrics{gap:6px;margin-top:8px}
+.note-editor-modal .tracking-goal-side .goal-metrics span{padding:5px 6px;font-size:11px}
+.note-editor-modal .tracking-goal-side .goal-saved,.note-editor-modal .tracking-goal-side .deadline-message,.note-editor-modal .tracking-goal-side [role="alert"]{font-size:10px;margin-top:4px}
+.note-editor-modal .tracking-summary-row{gap:8px;align-items:flex-start}
+.note-editor-modal .tracking-stats-compact{flex:1;flex-direction:row;justify-content:flex-start;align-items:flex-start;gap:2px 8px;flex-wrap:wrap;font-size:11px}
+.note-editor-modal .tracking-stats-compact strong{font-size:11px;line-height:1.5;white-space:nowrap}
+.note-editor-modal .tracking-total{align-items:flex-start}
+.note-editor-modal .tracking-stats-compact>strong::before{content:'·';margin-right:6px;color:#85848b}
+.note-editor-modal .tracking-stats-compact .reset-total{font-size:8px;line-height:1.2}
+.note-editor-modal .note-photos:empty{display:none}
+.note-editor-modal .drawing-slot{margin:10px 0}
+.note-modal-utilities{display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px 16px;margin:24px 0 8px;color:#697080}
+.note-modal-utilities>button,.note-modal-utilities .move-project>button{display:inline-flex;align-items:center;gap:5px;background:transparent;border:0;border-radius:0;padding:5px 0;font:inherit;font-size:11px;color:inherit;cursor:pointer}
+.note-modal-utilities button:hover{color:var(--noma-accent)}
+.note-modal-utilities .move-project-list{max-width:100%;text-align:left}
+.note-modal-footer{flex-shrink:0;background:inherit;padding-top:16px}
+.note-modal-media{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.note-editor-modal .note-modal-media>button{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:auto;height:38px;margin:0;padding:8px 12px;border:1px solid var(--noma-border);border-radius:8px;background:transparent;color:var(--noma-text);font:inherit;font-size:12px;cursor:pointer}
+.note-modal-media>button:hover{background:var(--noma-highlight)}
+.note-modal-media svg{width:21px;height:21px;flex-shrink:0}
+.note-modal-bottom{display:flex;justify-content:space-between;align-items:center;gap:18px}
+.note-modal-bottom .colors{gap:10px;flex-wrap:wrap}
+.note-modal-bottom .dot{width:28px;height:28px;padding:0;border-radius:10px;border:2px solid transparent;box-shadow:none}
+.note-modal-bottom .dot.default{border-color:#deded9}
+.note-modal-bottom .dot.selected{outline:3px solid var(--noma-accent);outline-offset:1px;border-color:var(--noma-surface)}
+.note-modal-bottom .save{margin:0;border-radius:10px;background:var(--noma-accent);color:white;font:inherit;font-size:14px;font-weight:600;padding:13px 18px}
+.note-editor-modal button:focus-visible{outline:2px solid var(--noma-accent);outline-offset:3px}
+@media(max-width:700px){.note-modal-overlay{padding:12px}.note-editor-modal{height:calc(100dvh - 24px);max-height:calc(100dvh - 24px);padding:20px}.note-editor-modal .editor-scroll{margin-right:-12px;padding-right:12px}.note-modal-heading{gap:8px}.note-editor-modal .title-input{font-size:24px}.note-editor-modal .tracking-stats-compact{gap:2px 6px}.note-editor-modal .tracking-panel.compact:has(.timer-drawer.expanded){height:240px}.note-editor-modal .tracking-body{grid-template-columns:minmax(0,1fr) minmax(150px,.9fr);gap:10px}.note-modal-bottom .colors{gap:8px}.note-modal-bottom .dot{width:23px;height:23px}.note-modal-bottom{gap:12px}.note-modal-media{gap:8px}.note-editor-modal .note-modal-media>button{padding:7px 9px}}
