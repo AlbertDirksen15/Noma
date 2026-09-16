@@ -7,6 +7,12 @@ on:
     paths:
       - learning-tracker-android-src.zip
       - .github/workflows/learning-tracker-apk.yml
+  pull_request:
+    branches:
+      - feature/desktop-launcher
+    paths:
+      - learning-tracker-android-src.zip
+      - .github/workflows/learning-tracker-apk.yml
   workflow_dispatch:
 
 jobs:
