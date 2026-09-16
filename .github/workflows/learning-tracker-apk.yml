@@ -1,0 +1,57 @@
+name: Build Learning Tracker APK
+
+on:
+  push:
+    branches:
+      - learning-tracker-apk
+    paths:
+      - learning-tracker-android-src.zip
+      - .github/workflows/learning-tracker-apk.yml
+  pull_request:
+    branches:
+      - feature/desktop-launcher
+    paths:
+      - learning-tracker-android-src.zip
+      - .github/workflows/learning-tracker-apk.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Extract source
+        run: unzip -q learning-tracker-android-src.zip
+
+      - name: Apply compile-safety patch
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('learning-tracker-android/app/src/main/java/com/albertdirksen/learningtracker/MainActivity.java')
+          s = p.read_text()
+          s = s.replace('if (!"true".equals(value)) MainActivity.super.onBackPressed();', 'if (!"true".equals(value)) finishNativeBack();')
+          s = s.replace('        } else super.onBackPressed();\n    }\n', '        } else {\n            finishNativeBack();\n        }\n    }\n\n    private void finishNativeBack() {\n        super.onBackPressed();\n    }\n')
+          p.write_text(s)
+
+      - name: Build debug APK
+        run: gradle -p learning-tracker-android app:assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-tracker-apk
+          path: learning-tracker-android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
